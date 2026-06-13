@@ -1,0 +1,23 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "chat",
+  "homepage": "https://github.com/KseniaTry/frontend-project-12#readme",
+  "bugs": {
+    "url": "https://github.com/KseniaTry/frontend-project-12/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KseniaTry/frontend-project-12.git"
+  },
+  "license": "ISC",
+  "author": "Tryapitsyna Ksenia",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@hexlet/chat-server": "^2.0.4"
+  }
+}
