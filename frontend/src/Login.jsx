@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { Form, Button, Container, Card, FloatingLabel } from 'react-bootstrap';
+import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
   const formik = useFormik({
@@ -14,7 +15,9 @@ const Login = () => {
   });
   return (
     <Card>
-      <Card.Header>Войти</Card.Header>
+      <Card.Header>
+        <h1>Войти</h1>
+      </Card.Header>
       <Card.Body>
         <Form onSubmit={formik.handleSubmit}>
           <FloatingLabel controlId='name' label='Ваш ник' className='mb-3'>
@@ -30,9 +33,15 @@ const Login = () => {
             />
             <Form.Label htmlFor="password">Пароль</Form.Label>
           </FloatingLabel>
-          <Button type="submit">Войти</Button>
+          <Button type="submit" variant='secondary'>Войти</Button>
         </Form>
       </Card.Body>
+      <Card.Footer>
+        <span>
+          Нет аккаунта?&nbsp;
+          <Link to='#' className="text-decoration-none">Регистрация</Link>
+        </span>
+      </Card.Footer>
     </Card>
   );
 };
