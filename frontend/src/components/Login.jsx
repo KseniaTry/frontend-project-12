@@ -1,14 +1,15 @@
 import { useFormik } from 'formik';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import {actions as authActions} from '../slices/AuthSlice.jsx';
+import {isAuth, setToken} from '../slices/AuthSlice.jsx';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('')
+  const dispatch = useDispatch();
 
   const renderError = (error) => {
     return(
@@ -26,12 +27,12 @@ const Login = () => {
         const response = await axios.post('/api/v1/login', values)
         const token = response.data;
         localStorage.setItem('userToken', JSON.stringify(token))
-        authActions.isAuth(true);
-        authActions.setToken(token);
+        dispatch(isAuth(true));
+        dispatch(setToken(token));
         navigate('/'); // Перенаправляем на главную страницу после успешного входа
       } catch(err) {
-        authActions.isAuth(false)
-        authActions.setToken('')
+        dispatch(isAuth(false));
+        dispatch(setToken(''));
         localStorage.removeItem('userToken');
         if (err.response && err.response.status === 401) {
           setError('Неверный логин или пароль');
