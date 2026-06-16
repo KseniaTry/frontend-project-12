@@ -1,9 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Login from './Login';
 import NotFound from './NotFound';
 import Chat from './Chat';
 import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
 
 // создаем компонент, который проверяет авторизацию и либо отображает дочерние компоненты, либо перенаправляет на страницу входа
 const ProtectedRoute = () => {
