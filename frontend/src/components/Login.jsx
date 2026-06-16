@@ -26,14 +26,17 @@ const Login = () => {
         const response = await axios.post('/api/v1/login', values)
         const token = response.data;
         localStorage.setItem('userToken', JSON.stringify(token))
-        authActions.isAuth(true); // Устанавливаем состояние авторизации в true
-        authActions.setToken(token); // Устанавливаем токен в состояние
+        authActions.isAuth(true);
+        authActions.setToken(token);
         navigate('/'); // Перенаправляем на главную страницу после успешного входа
       } catch(err) {
+        authActions.isAuth(false)
+        authActions.setToken('')
+        localStorage.removeItem('userToken');
         if (err.response && err.response.status === 401) {
           setError('Неверный логин или пароль');
         } else {
-          setError('Другая ошибка сервера:', err.message);
+          setError(`Ошибка сервера: ${err.message}. Перезагруите страницу`);
         }
       }
     },
