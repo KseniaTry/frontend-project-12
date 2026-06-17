@@ -3,7 +3,7 @@ import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
-import {setAuthStatus, setToken} from '../slices/AuthSlice.jsx';
+import { setAuthStatus, setToken } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
 
 const Login = () => {
