@@ -1,8 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { getChannels } from './channelsSlice'
+
+// берем токен из localStorage, так как при обновлении страницы нам нужно пocмтреть, 
+// авторизован ли пользователь и в зависимости от этого рендерить initialState
+const currentToken = localStorage.getItem('userToken') || ''; 
+console.log(currentToken)
 // слайс хранит авторизацию и сам токен
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { isAuth: false, token: ''},
+  initialState: { 
+    isAuth: !!currentToken, 
+    token: currentToken ? currentToken : ''},
   reducers: {
     setAuthStatus: (state, action) => {
       state.isAuth = action.payload
@@ -10,6 +18,19 @@ const authSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getChannels.rejected, (state, action) => {
+      console.log(action)
+      const isUnauthorized = action.error.message === 'Request failed with status code 401' 
+      console.log(isUnauthorized)
+      console.log(state.isAuth)
+      if (isUnauthorized) {
+        state.isAuth = false;
+        state.token = '';
+        localStorage.removeItem('userToken');
+      }
+    })
   }
 })
 
