@@ -54,7 +54,7 @@ const Login = () => {
       <Card.Body>
         <Form onSubmit={formik.handleSubmit}>
           <FloatingLabel controlId='username' label='Ваш ник' className='mb-3'>
-            <Form.Control name="username" type="text"placeholder='Ваш ник'
+            <Form.Control name="username" type="text" placeholder='Ваш ник'
               onChange={formik.handleChange}
               value={formik.values.username}
             />

@@ -5,15 +5,19 @@ const channelsAdapter = createEntityAdapter()
 
 export const getChannels = createAsyncThunk(
   'channels/getChannels', 
-  async (_, { getState }) => {
-    const state = getState()
-    const response = await axios.get('/api/v1/channels', {
-      headers: {
-        Authorization: `Bearer ${state.auth.token}`,
-      },
-    });
-    console.log(response.data)
-    return response.data
+  async (_, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState()
+      const response = await axios.get('/api/v1/channels', {
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      });
+      console.log(response.data)
+      return response.data
+    } catch(err) {
+      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data })
+    }
   })
 
 const channelsSlice = createSlice({
