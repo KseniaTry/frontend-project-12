@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 // создаем компонент, который проверяет авторизацию и либо отображает дочерние компоненты, либо перенаправляет на страницу входа
 const ProtectedRoute = () => {
-  const isAuth  = useSelector(state => state.auth)
+  const isAuth  = useSelector(state => state.auth.isAuth)
 
   // Если авторизован, отображает дочерние компоненты (Outlet), иначе перенаправляет
   return isAuth ? <Outlet /> : <Navigate to="/login" replace />;
