@@ -1,9 +1,11 @@
 
 import { ListGroup, Button } from 'react-bootstrap';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setActiveChannel } from '../slices/channelsSlice';
 
 const Channels = ({channels}) => {
-  const [activeChannel, setActiveChannel] = useState('general')
+  const dispatch = useDispatch()
+  const activeChannel = useSelector(state => state.channels.activeChannel)
 
   return(
     <div className='bg-light rounded text-dark h-100'>
@@ -15,10 +17,10 @@ const Channels = ({channels}) => {
         <ListGroup as="ul">
           {channels.map((channel) => {
             const isActive = activeChannel === channel.name
-            
+
             return <ListGroup.Item 
               key={channel.id} as="li"
-              onClick={() => setActiveChannel(channel.name)} 
+              onClick={() =>  dispatch(setActiveChannel(channel.name))} 
               active={isActive}>
               {channel.name}
             </ListGroup.Item>

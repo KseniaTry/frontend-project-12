@@ -26,9 +26,13 @@ const channelsSlice = createSlice({
   name: 'channels',
   initialState: channelsAdapter.getInitialState({
     loadingStatus: false,
-    error: null
+    error: null,
+    activeChannel: 'general'
   }),
   reducers: {
+    setActiveChannel: (state, action) => {
+      state.activeChannel = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -56,4 +60,5 @@ export const {
   // selectIds: selectChannelIds        // Возвращает массив только с ID каналов
 } = baseSelectors;
 
+export const { setActiveChannel } = channelsSlice.actions
 export default channelsSlice.reducer
