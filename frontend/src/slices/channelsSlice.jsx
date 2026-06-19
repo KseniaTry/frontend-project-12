@@ -13,10 +13,12 @@ export const getChannels = createAsyncThunk(
           Authorization: `Bearer ${state.auth.token}`,
         },
       });
-      console.log(response.data)
       return response.data
     } catch(err) {
-      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data })
+      // с помощью thunkAPI мы получаем конкретный код ошибки (401), 
+      // чтобы далее можно было корректно ее обработать и сделать 
+      // перенаправление на страницу Login при отсутствии токена авторизации
+      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
     }
   })
 

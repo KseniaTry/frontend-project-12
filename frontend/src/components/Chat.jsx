@@ -15,7 +15,6 @@ const Chat = () => {
   }, [dispatch])
 
   const channels = useSelector(selectAllChannels)
-  // console.log(channels)
   const {loadingStatus} = useSelector(state => state.channels)
   
   return(
