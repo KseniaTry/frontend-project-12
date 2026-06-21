@@ -3,7 +3,7 @@ import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
-import { setAuthStatus, setToken } from '../slices/authSlice.jsx';
+import { setAuthStatus, setToken, setUsername } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
 
 const Login = () => {
@@ -27,15 +27,18 @@ const Login = () => {
       try {
         const response = await axios.post('/api/v1/login', values)
         const token = response.data.token;
-        console.log(token)
         localStorage.setItem('userToken', token)
         dispatch(setAuthStatus(true));
         dispatch(setToken(token));
+        localStorage.setItem('username', values.username)
+        dispatch(setUsername(values.username))
         navigate('/'); // Перенаправляем на главную страницу после успешного входа
       } catch(err) {
         dispatch(setAuthStatus(false));
         dispatch(setToken(''));
+        dispatch(setUsername(''))
         localStorage.removeItem('userToken');
+        localStorage.removeItem('username');
 
         if (err.response && err.response.status === 401) {
           setError('Неверный логин или пароль');

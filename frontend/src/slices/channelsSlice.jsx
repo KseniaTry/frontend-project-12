@@ -27,11 +27,11 @@ const channelsSlice = createSlice({
   initialState: channelsAdapter.getInitialState({
     loadingStatus: false,
     error: null,
-    activeChannel: 'general'
+    activeChannelId: ''
   }),
   reducers: {
-    setActiveChannel: (state, action) => {
-      state.activeChannel = action.payload
+    setActiveChannelId: (state, action) => {
+      state.activeChannelId = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -56,9 +56,9 @@ const baseSelectors = channelsAdapter.getSelectors((state) => state.channels);
 // 2. Экспортируем их с понятными именами
 export const {
   selectAll: selectAllChannels,      // Возвращает МАССИВ всех каналов (уже готовый для .map)
-  // selectById: selectChannelById,    // Находит один канал по его ID
+  selectById: selectChannelById,    // Находит один канал по его ID
   // selectIds: selectChannelIds        // Возвращает массив только с ID каналов
 } = baseSelectors;
 
-export const { setActiveChannel } = channelsSlice.actions
+export const { setActiveChannelId } = channelsSlice.actions
 export default channelsSlice.reducer
