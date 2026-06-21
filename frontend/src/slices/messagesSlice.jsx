@@ -51,6 +51,9 @@ const messagesSlice = createSlice({
     error: null,
   }),
   reducers: {
+    addMessage: (state, action) => {
+      messagesAdapter.addOne(state, action.payload)
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -71,7 +74,7 @@ const messagesSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(sendMessage.fulfilled, (state, action) => { 
-        messagesAdapter.addOne(action.payload)
+        messagesAdapter.addOne(state, action.payload)
         state.loadingStatus = 'idle'
       })
       .addCase(sendMessage.rejected, (state, action) => {
@@ -94,4 +97,5 @@ export const selectMessagesCountByChannel = (activeChannelId) => createSelector(
   (messages) => messages.filter((message) => message.channelId === activeChannelId).length
 )
 
+export const {addMessage} = messagesSlice.actions
 export default messagesSlice.reducer

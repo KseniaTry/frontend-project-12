@@ -1,5 +1,4 @@
 import { Button, Form, ListGroup } from "react-bootstrap"
-import { socket } from "../socket";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectAllMessages, sendMessage, selectMessagesCountByChannel } from "../slices/messagesSlice";
@@ -8,7 +7,7 @@ import { selectChannelById } from "../slices/channelsSlice";
 // пример сообщения
 // const newMessage = { body: 'new message', channelId: '1', username: 'admin }; 
 
-const Messages = ({isConnected}) => {
+const Messages = ({isSocketConnected}) => {
   const dispatch = useDispatch()
   const messages = useSelector(selectAllMessages)
   const [value, setValue] = useState('');
@@ -21,7 +20,6 @@ const Messages = ({isConnected}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
     const newMessage = {
       body: value,
@@ -39,10 +37,6 @@ const Messages = ({isConnected}) => {
     } finally {
       setIsLoading(false)
     }
-  
-    // socket.timeout(5000).emit('newMessage', newMessage, () => {
-    //   setIsLoading(false);
-    // });
   }
     
   return(
@@ -50,10 +44,10 @@ const Messages = ({isConnected}) => {
       <div className="flex-grow-0 flex-shrink-0 p-4 d-flex border-bottom border-secondary-subtle shadow-sm w-100 flex-column">
         <h2 className="h4"># {activeChannel?.name}</h2> 
         <p> {messagesCount} сообщения</p>
-        {isConnected ? <div>Загрузка сообщений...</div> : null}
       </div>
       <div className="flex-grow-1 flex-shrink-1 p-4 bg-white w-100 overflow-auto">
         {error ? <div>{error}</div> : null}
+        {isSocketConnected ? <div>Ошибка загрузки Socket</div> : null}
         <ListGroup as="ul">
           {messages.map((message) => {
             return <ListGroup.Item
@@ -75,6 +69,7 @@ const Messages = ({isConnected}) => {
               value={value} 
               onChange={ e => setValue(e.target.value)} 
               placeholder="Введние сообщение..." 
+              required
             />
             <Form.Label ></Form.Label>
             <Button type="submit" variant="primary" disabled={isLoading}>Отправить</Button>

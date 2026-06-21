@@ -7,14 +7,15 @@ import { socket } from '../socket';
 import Channels from './Channels';
 import Messages from "./Messages";
 import Header from "./Header";
-import { getMessages } from "../slices/messagesSlice";
+import { getMessages, selectAllMessages, addMessage } from "../slices/messagesSlice";
 
 const Chat = () => {
   const dispatch = useDispatch()
   const channels = useSelector(selectAllChannels)
+  const messages = useSelector(selectAllMessages)
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const {loadingStatus} = useSelector(state => state.channels)
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
 
   // загружаем исходные данные единожды
   useEffect(() => {
@@ -34,15 +35,16 @@ const Chat = () => {
 
   useEffect(() => {
     function onConnect() {
-      setIsConnected(true);
+      setSocketIsConnected(true);
     }
 
     function onDisconnect() {
-      setIsConnected(false);
+      setSocketIsConnected(false);
     }
 
     function onNewMessage(payload) {
-      console.log(payload)
+      console.log('сокет-сообщение:', payload);
+      dispatch(addMessage(payload)) // так как метод addOne сам проверяет наличие дублей по id, поэтому такая проверка не нужна
     }
 
     socket.on('connect', onConnect);
@@ -54,7 +56,7 @@ const Chat = () => {
       socket.off('disconnect', onDisconnect);
       socket.off('newMessage', onNewMessage);
     };
-  }, []);
+  }, [dispatch, messages]);
 
   return(
     <Container fluid className="border vh-100 p-0 d-flex flex-column bg-body-secondary">
@@ -65,7 +67,7 @@ const Chat = () => {
           <Channels />
         </Col>
         <Col xs={8} md={8} className="h-100 d-flex flex-column p-0" style={{ minHeight: 0 }}>
-          <Messages isConnected={isConnected}/>
+          <Messages isConnected={isSocketConnected}/>
         </Col>
       </Row>
   
