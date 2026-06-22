@@ -62,7 +62,7 @@ const Messages = ({isSocketConnected}) => {
       </div>
       <div className="flex-grow-0 flex-shrink-0 p-4 w-100">
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="message" >
+          <Form.Group controlId="message" className="d-flex gap-2">
             <Form.Control 
               name="message" 
               type="text" 
