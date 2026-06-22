@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState} from "react";
 import { getChannels } from "../slices/channelsSlice"
-import { selectAllChannels, setActiveChannelId } from "../slices/channelsSlice"
+import { selectAllChannels, setActiveChannelId, addNewChannel } from "../slices/channelsSlice"
 import { Container, Row, Col } from 'react-bootstrap';
 import { socket } from '../socket';
 import Channels from './Channels';
@@ -47,16 +47,23 @@ const Chat = () => {
       dispatch(addMessage(payload)) // так как метод addOne сам проверяет наличие дублей по id, поэтому такая проверка не нужна
     }
 
+    function onNewChannel(payload) {
+      console.log('сокет-новый канал: ', payload)
+      dispatch(addNewChannel(payload))
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('newMessage', onNewMessage);
+    socket.on('newChannel', onNewChannel);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('newMessage', onNewMessage);
+      socket.off('newChannel', onNewChannel);
     };
-  }, [dispatch, messages]);
+  }, [dispatch]);
 
   return(
     <Container fluid className="border vh-100 p-0 d-flex flex-column bg-body-secondary">

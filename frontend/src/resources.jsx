@@ -1,13 +1,15 @@
 export const resources =  {
   ru: {
     translation: {
+      delete: 'Удалить',
+      rename: 'Переименовать',
       messages: {
         messages_one: '{{count}} сообщение',
         messages_few: '{{count}} сообщения',
         messages_many: '{{count}} сообщений',
         send: 'Отправить',
         placeholder: 'Введите сообщение...',
-        socketError: 'Ошибка загрузки Socket'
+        socketError: 'Ошибка загрузки Socket',
       },
       channels: {
         title: 'Каналы'
@@ -21,7 +23,7 @@ export const resources =  {
         title: 'Добавить канал',
         reset: 'Отменить',
         send: 'Отправить'
-      }
+      },
     }
   }
 }

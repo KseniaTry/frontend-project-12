@@ -53,6 +53,7 @@ const Messages = ({isSocketConnected}) => {
         <ListGroup as="ul">
           {messagesByChannel.map((message) => {
             return <ListGroup.Item
+              className='border-0'
               key={message.id} as="li"
             >
               <b>{message.username}: </b>{message.body}

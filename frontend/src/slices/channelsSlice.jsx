@@ -22,7 +22,7 @@ export const getChannels = createAsyncThunk(
     }
   })
 
-export  const addChannel = createAsyncThunk(
+export const addChannel = createAsyncThunk(
   'channels/addChannel',
   async(newChannel, thunkAPI) => {
     try {
@@ -32,7 +32,6 @@ export  const addChannel = createAsyncThunk(
           Authorization: `Bearer ${state.auth.token}`,
         },
       })
-      console.log(response.data)
       return response.data
     } catch(err) {
       console.log(err)
@@ -51,6 +50,9 @@ const channelsSlice = createSlice({
   reducers: {
     setActiveChannelId: (state, action) => {
       state.activeChannelId = action.payload
+    },
+    addNewChannel: (state, action) => {
+      channelsAdapter.addOne(state, action.payload)
     }
   },
   extraReducers: (builder) => {
@@ -72,7 +74,6 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(addChannel.fulfilled, (state, action) => {
-        channelsAdapter.addOne(state, action.payload)
         state.loadingStatus = 'idle'
       })
       .addCase(addChannel.rejected, (state, action) => {
@@ -92,5 +93,5 @@ export const {
   // selectIds: selectChannelIds        // Возвращает массив только с ID каналов
 } = baseSelectors;
 
-export const { setActiveChannelId } = channelsSlice.actions
+export const { setActiveChannelId, addNewChannel } = channelsSlice.actions
 export default channelsSlice.reducer
