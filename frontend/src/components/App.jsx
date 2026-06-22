@@ -3,22 +3,6 @@ import Login from './Login';
 import NotFound from './NotFound';
 import Chat from './Chat';
 import { useSelector } from 'react-redux';
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-
-i18n
-  .use(initReactI18next) 
-  .init({
-    resources: {
-      en: {
-        translation: {
-          "Welcome to React": "Welcome to React and react-i18next"
-        }
-      }
-    },
-    lng: "ru",
-    fallbackLng: "ru",
-  });
 
 // создаем компонент, который проверяет авторизацию и либо отображает дочерние компоненты, либо перенаправляет на страницу входа
 const ProtectedRoute = () => {
