@@ -22,6 +22,25 @@ export const getChannels = createAsyncThunk(
     }
   })
 
+export  const addChannel = createAsyncThunk(
+  'channels/addChannel',
+  async(newChannel, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState()
+      const response = await axios.post('/api/v1/channels', newChannel, {
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      })
+      console.log(response.data)
+      return response.data
+    } catch(err) {
+      console.log(err)
+      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+    }
+  }
+)
+
 const channelsSlice = createSlice({
   name: 'channels',
   initialState: channelsAdapter.getInitialState({
@@ -36,6 +55,7 @@ const channelsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    // получение всех каналов
       .addCase(getChannels.pending, (state) => {
         state.loadingStatus = 'loading'
       })
@@ -44,6 +64,18 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'idle'
       })
       .addCase(getChannels.rejected, (state, action) => {
+        state.loadingStatus = 'failed'
+        state.error = action.error ? action.error.message : null
+      })
+    // добавление канала
+      .addCase(addChannel.pending, (state) => {
+        state.loadingStatus = 'loading'
+      })
+      .addCase(addChannel.fulfilled, (state, action) => {
+        channelsAdapter.addOne(state, action.payload)
+        state.loadingStatus = 'idle'
+      })
+      .addCase(addChannel.rejected, (state, action) => {
         state.loadingStatus = 'failed'
         state.error = action.error ? action.error.message : null
       })

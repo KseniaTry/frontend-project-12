@@ -16,6 +16,11 @@ export const resources =  {
         title: 'Hexlet Chat',
         loginInButton: 'Войти',
         logOutButton: 'Выйти'
+      },
+      channelModal: {
+        title: 'Добавить канал',
+        reset: 'Отменить',
+        send: 'Отправить'
       }
     }
   }
