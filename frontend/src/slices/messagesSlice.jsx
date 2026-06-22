@@ -92,9 +92,9 @@ export const {
 } = baseSelectors;
 
 // кастомный селектор для подсчета количества сообщений в конкретном канале
-export const selectMessagesCountByChannel = (activeChannelId) => createSelector(
+export const selectMessagesByChannel = (activeChannelId) => createSelector(
   [selectAllMessages],
-  (messages) => messages.filter((message) => message.channelId === activeChannelId).length
+  (messages) => messages.filter((message) => message.channelId === activeChannelId)
 )
 
 export const {addMessage} = messagesSlice.actions

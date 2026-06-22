@@ -1,7 +1,7 @@
 import { Button, Form, ListGroup } from "react-bootstrap"
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAllMessages, sendMessage, selectMessagesCountByChannel } from "../slices/messagesSlice";
+import { sendMessage, selectMessagesByChannel } from "../slices/messagesSlice";
 import { selectChannelById } from "../slices/channelsSlice";
 import { useTranslation } from "react-i18next";
 
@@ -11,14 +11,14 @@ import { useTranslation } from "react-i18next";
 const Messages = ({isSocketConnected}) => {
   const { t } = useTranslation();
   const dispatch = useDispatch()
-  const messages = useSelector(selectAllMessages)
   const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('')
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const username = useSelector(state => state.auth.username)
   const activeChannel = useSelector(state => selectChannelById(state, activeChannelId))
-  const messagesCount = useSelector(selectMessagesCountByChannel(activeChannelId))
+  const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
+  const messagesCount = messagesByChannel.length
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +51,7 @@ const Messages = ({isSocketConnected}) => {
         {error ? <div>{error}</div> : null}
         {isSocketConnected ? <div>{t('messages.errorSocket')}</div> : null}
         <ListGroup as="ul">
-          {messages.map((message) => {
+          {messagesByChannel.map((message) => {
             return <ListGroup.Item
               key={message.id} as="li"
             >
