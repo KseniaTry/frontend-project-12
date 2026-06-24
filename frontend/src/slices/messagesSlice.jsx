@@ -1,6 +1,7 @@
-import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter, createAsyncThunk, current} from '@reduxjs/toolkit'
 import axios from 'axios'
 import { createSelector } from '@reduxjs/toolkit'
+import { removeChannel } from './channelsSlice'
 
 const messagesAdapter = createEntityAdapter()
 
@@ -44,6 +45,23 @@ export const sendMessage = createAsyncThunk(
   }
 )
 
+export const deleteMessage = createAsyncThunk(
+  'messages/removeMessage',
+  async(messageId, thunkAPI) => {   
+    try {
+      const state = thunkAPI.getState()
+      const response = await axios.delete(`/api/v1/messages/${messageId}`, {
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      })
+      return response.data
+    } catch(err) {
+      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+    }
+  }
+)
+
 const messagesSlice = createSlice({
   name: 'messages',
   initialState: messagesAdapter.getInitialState({
@@ -52,6 +70,7 @@ const messagesSlice = createSlice({
   }),
   reducers: {
     addMessage: (state, action) => {
+      console.log('Текущие сообщ:', current(state.entities));
       messagesAdapter.addOne(state, action.payload)
     }
   },
@@ -80,6 +99,25 @@ const messagesSlice = createSlice({
       .addCase(sendMessage.rejected, (state, action) => {
         state.loadingStatus = 'failed'
         state.error = action.error ? action.error.message : null
+      })
+      // удаление сообщения
+      .addCase(deleteMessage.pending, (state) => {
+        state.loadingStatus = 'loading'
+      })
+      .addCase(deleteMessage.fulfilled, (state, action) => { 
+        messagesAdapter.removeOne(state, action.payload)
+        state.loadingStatus = 'idle'
+      })
+      .addCase(deleteMessage.rejected, (state, action) => {
+        state.loadingStatus = 'failed'
+        state.error = action.error ? action.error.message : null
+      })
+      // удаление всех сообщений при удалении канала
+      .addCase(removeChannel, (state, action) => {
+        const channelId = action.payload
+        const messages = Object.values(state.entities)
+        const restMessages = messages.filter((message) => message.channelId !== channelId)
+        messagesAdapter.setAll(state, restMessages)
       })
   }
 })
