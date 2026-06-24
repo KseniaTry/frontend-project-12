@@ -1,18 +1,17 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState} from "react";
 import { getChannels } from "../slices/channelsSlice"
-import { selectAllChannels, setActiveChannelId, addNewChannel } from "../slices/channelsSlice"
+import { selectAllChannels, setDefaultChannelId, addNewChannel, removeChannel } from "../slices/channelsSlice"
 import { Container, Row, Col } from 'react-bootstrap';
 import { socket } from '../socket';
 import Channels from './Channels';
 import Messages from "./Messages";
 import Header from "./Header";
-import { getMessages, selectAllMessages, addMessage } from "../slices/messagesSlice";
+import { getMessages, addMessage } from "../slices/messagesSlice";
 
 const Chat = () => {
   const dispatch = useDispatch()
   const channels = useSelector(selectAllChannels)
-  const messages = useSelector(selectAllMessages)
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const {loadingStatus} = useSelector(state => state.channels)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
@@ -26,13 +25,11 @@ const Chat = () => {
   // один раз присваиваем id с выбранным каналом (только при условии что каналы загрузились)
   useEffect(() => {
     if (channels.length > 0 && !activeChannelId) {
-      const defaultActiveChannel = channels.find((channel) => channel.name === 'general');
-      if (defaultActiveChannel) {
-        dispatch(setActiveChannelId(defaultActiveChannel.id));
-      }
+      dispatch(setDefaultChannelId())
     }
-  }, [channels, dispatch, activeChannelId]);
+  }, [activeChannelId, channels, dispatch]);
 
+  // сокет подписки 
   useEffect(() => {
     function onConnect() {
       setSocketIsConnected(true);
@@ -52,16 +49,23 @@ const Chat = () => {
       dispatch(addNewChannel(payload))
     }
 
+    function onRemoveChannel(payload) {
+      console.log('удаление канала ', payload)
+      dispatch(removeChannel(payload.id))
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('newMessage', onNewMessage);
     socket.on('newChannel', onNewChannel);
+    socket.on('removeChannel', onRemoveChannel);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('newMessage', onNewMessage);
       socket.off('newChannel', onNewChannel);
+      socket.off('removeChannel', onRemoveChannel);
     };
   }, [dispatch]);
 

@@ -1,23 +1,41 @@
 
 import { ListGroup, Button, Dropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActiveChannelId } from '../slices/channelsSlice';
-import { selectAllChannels } from '../slices/channelsSlice';
+import { setActiveChannelId,  setDefaultChannelId, removeChannelFromServer, selectAllChannels } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import ChannelModal from './ChannelModal';
+import { selectAllMessages } from '../slices/messagesSlice';
 
 const DropdownChannel = ({channel, isActive}) => {
   const {t} = useTranslation()
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('')
+
+  const handleClick = async () => {
+    try {
+      await dispatch(removeChannelFromServer(channel.id))
+      dispatch(setDefaultChannelId())
+      setIsLoading(true)
+    } catch(err) {
+      setIsLoading(false)
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <Dropdown className='d-grid w-100'>
       <Dropdown.Toggle variant='secondary' id="dropdown-channel" className={`d-flex align-items-center justify-content-between w-100 text-start bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
         # {channel.name}
+        {/* должна быть модалка с ошибкой ! */}
+        {error ? <div>{error}</div> : null} 
       </Dropdown.Toggle>
 
       <Dropdown.Menu className='w-100'>
-        <Dropdown.Item as='button'>{t('delete')}</Dropdown.Item>
+        <Dropdown.Item as='button' onClick={handleClick} disabled={isLoading}>{t('delete')}</Dropdown.Item>
         <Dropdown.Item as='button'>{t('rename')}</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
