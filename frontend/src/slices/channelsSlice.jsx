@@ -1,4 +1,4 @@
-import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter, createAsyncThunk , current} from '@reduxjs/toolkit'
 import axios from 'axios'
 
 const channelsAdapter = createEntityAdapter()
@@ -40,6 +40,23 @@ export const addChannel = createAsyncThunk(
   }
 )
 
+export const removeChannelFromServer = createAsyncThunk(
+  'channels/removeChannelFromServer',
+  async(channelId, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState()
+      const response = await axios.delete(`/api/v1/channels/${channelId}`, {
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      })
+      return response.data
+    } catch(err) {
+      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+    }
+  }
+)
+
 const channelsSlice = createSlice({
   name: 'channels',
   initialState: channelsAdapter.getInitialState({
@@ -48,11 +65,20 @@ const channelsSlice = createSlice({
     activeChannelId: ''
   }),
   reducers: {
+    setDefaultChannelId: (state) => {
+      const channels = Object.values(state.entities)
+      const defaultActiveChannel = channels.find((channel) => channel.name === 'general');
+      state.activeChannelId = defaultActiveChannel?.id || null
+    },
     setActiveChannelId: (state, action) => {
       state.activeChannelId = action.payload
     },
     addNewChannel: (state, action) => {
+      console.log('Текущие каналы:', current(state.entities));
       channelsAdapter.addOne(state, action.payload)
+    },
+    removeChannel: (state, action) => {
+      channelsAdapter.removeOne(state, action.payload)
     }
   },
   extraReducers: (builder) => {
@@ -74,9 +100,22 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(addChannel.fulfilled, (state, action) => {
+        channelsAdapter.addOne(state, action.payload)
         state.loadingStatus = 'idle'
       })
       .addCase(addChannel.rejected, (state, action) => {
+        state.loadingStatus = 'failed'
+        state.error = action.error ? action.error.message : null
+      })
+      // удаление канала
+      .addCase(removeChannelFromServer.pending, (state) => {
+        state.loadingStatus = 'loading'
+      })
+      .addCase(removeChannelFromServer.fulfilled, (state, action) => {
+        channelsAdapter.removeOne(state, action.payload)
+        state.loadingStatus = 'idle'
+      })
+      .addCase(removeChannelFromServer.rejected, (state, action) => {
         state.loadingStatus = 'failed'
         state.error = action.error ? action.error.message : null
       })
@@ -93,5 +132,5 @@ export const {
   // selectIds: selectChannelIds        // Возвращает массив только с ID каналов
 } = baseSelectors;
 
-export const { setActiveChannelId, addNewChannel } = channelsSlice.actions
+export const { setActiveChannelId, addNewChannel, removeChannel, setDefaultChannelId } = channelsSlice.actions
 export default channelsSlice.reducer
