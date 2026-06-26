@@ -1,0 +1,48 @@
+
+import { useState } from "react";
+import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
+import { useTranslation } from 'react-i18next';
+import ChannelModal from "./ChannelModal";
+
+const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
+  const {t} = useTranslation()
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
+  const [error, setError] = useState('')
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(removeChannelFromServer(channel.id))
+      dispatch(setDefaultChannelId())
+      setIsLoading(true)
+    } catch(err) {
+      setIsLoading(false)
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <Dropdown as={ButtonGroup} className='d-flex d-flex align-items-center justify-content-between w-100 mb-1'>
+        <Button variant="secondary" onClick={() => handleClickChannel(channel.id)} className= {`text-start text-dark bg-transparent p-0 border-0 shadow-none w-100 ${isActive ? 'text-white' : 'text-dark'}`}># {channel.name}</Button>
+        {error ? <div>{error}</div> : null} 
+        <Dropdown.Toggle variant='secondary' id="dropdown-channel" className={`bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
+          {/* должна быть модалка с ошибкой ! */}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='w-100'>
+          <Dropdown.Item as='button' onClick={handleDelete} disabled={isLoading}>{t('delete')}</Dropdown.Item>
+          <Dropdown.Item as='button' onClick={() => setModalShow(true)}>{t('rename')}</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+      <ChannelModal show={modalShow} onHide={() => setModalShow(false)} type='rename'/>
+    </>
+  )
+}
+
+export default DropdownChannel
