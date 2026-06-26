@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState} from "react";
 import { getChannels } from "../slices/channelsSlice"
-import { selectAllChannels, setDefaultChannelId, addNewChannel, removeChannel } from "../slices/channelsSlice"
+import { selectAllChannels, setDefaultChannelId, addNewChannel, removeChannel, renameChannel } from "../slices/channelsSlice"
 import { Container, Row, Col } from 'react-bootstrap';
 import { socket } from '../socket';
 import Channels from './Channels';
@@ -11,8 +11,6 @@ import { getMessages, addMessage } from "../slices/messagesSlice";
 
 const Chat = () => {
   const dispatch = useDispatch()
-  const channels = useSelector(selectAllChannels)
-  const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const {loadingStatus} = useSelector(state => state.channels)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
 
@@ -21,13 +19,6 @@ const Chat = () => {
     dispatch(getChannels())
     dispatch(getMessages())
   }, [dispatch])
-
-  // один раз присваиваем id с выбранным каналом (только при условии что каналы загрузились)
-  useEffect(() => {
-    if (channels.length > 0 && !activeChannelId) {
-      dispatch(setDefaultChannelId())
-    }
-  }, [activeChannelId, channels, dispatch]);
 
   // сокет подписки 
   useEffect(() => {
@@ -54,11 +45,17 @@ const Chat = () => {
       dispatch(removeChannel(payload.id))
     }
 
+    function onRenameChannel(payload) {
+      console.log('переименование канала ', payload)
+      dispatch(renameChannel(payload))
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('newMessage', onNewMessage);
     socket.on('newChannel', onNewChannel);
     socket.on('removeChannel', onRemoveChannel);
+    socket.on('renameChannel', onRenameChannel);
 
     return () => {
       socket.off('connect', onConnect);
@@ -66,6 +63,7 @@ const Chat = () => {
       socket.off('newMessage', onNewMessage);
       socket.off('newChannel', onNewChannel);
       socket.off('removeChannel', onRemoveChannel);
+      socket.off('renameChannel', onRenameChannel);
     };
   }, [dispatch]);
 
