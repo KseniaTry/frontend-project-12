@@ -20,7 +20,8 @@ export const resources =  {
         logOutButton: 'Выйти'
       },
       channelModal: {
-        title: 'Добавить канал',
+        addTitle: 'Добавить канал',
+        renameTitle: 'Переименовать канал',
         reset: 'Отменить',
         send: 'Отправить'
       },
