@@ -57,6 +57,24 @@ export const removeChannelFromServer = createAsyncThunk(
   }
 )
 
+// const editedMessage = { body: 'new body message' };
+export const editChannel = createAsyncThunk(
+  'channels/editChannel',
+  async({channelId, editedChannel}, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState()
+      const response = await axios.patch(`/api/v1/channels/${channelId}`, editedChannel, {
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      }) 
+      return response.data
+    } catch(err) {
+      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+    }
+  }
+)
+
 const channelsSlice = createSlice({
   name: 'channels',
   initialState: channelsAdapter.getInitialState({
@@ -66,11 +84,12 @@ const channelsSlice = createSlice({
   }),
   reducers: {
     setDefaultChannelId: (state) => {
-      const channels = Object.values(state.entities)
+      const channels = channelsAdapter.getSelectors().selectAll(state)
       const defaultActiveChannel = channels.find((channel) => channel.name === 'general');
       state.activeChannelId = defaultActiveChannel?.id || null
     },
     setActiveChannelId: (state, action) => {
+      localStorage.setItem('activeChannel', action.payload)
       state.activeChannelId = action.payload
     },
     addNewChannel: (state, action) => {
@@ -79,6 +98,10 @@ const channelsSlice = createSlice({
     },
     removeChannel: (state, action) => {
       channelsAdapter.removeOne(state, action.payload)
+    },
+    renameChannel: (state, action) => {
+      const id = action.payload.id
+      channelsAdapter.updateOne(state, {id, changes: {name: action.payload.name}})
     }
   },
   extraReducers: (builder) => {
@@ -89,6 +112,8 @@ const channelsSlice = createSlice({
       })
       .addCase(getChannels.fulfilled, (state, action) => { //  action.payload = response.data
         channelsAdapter.setAll(state, action.payload)
+        console.log(action.payload)
+        channelsSlice.caseReducers.setDefaultChannelId(state) // вызываем обычный редьюсер внутри extra reducer 
         state.loadingStatus = 'idle'
       })
       .addCase(getChannels.rejected, (state, action) => {
@@ -119,6 +144,19 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'failed'
         state.error = action.error ? action.error.message : null
       })
+    // переименование канала
+      .addCase(editChannel.pending, (state) => {
+        state.loadingStatus = 'loading'
+      })
+      .addCase(editChannel.fulfilled, (state, action) => {
+        const id = action.payload.id
+        channelsAdapter.updateOne(state, {id, changes: {name: action.payload.name}})
+        state.loadingStatus = 'idle'
+      })
+      .addCase(editChannel.rejected, (state, action) => {
+        state.loadingStatus = 'failed'
+        state.error = action.error ? action.error.message : null
+      })
   }
 })
 
@@ -132,5 +170,5 @@ export const {
   // selectIds: selectChannelIds        // Возвращает массив только с ID каналов
 } = baseSelectors;
 
-export const { setActiveChannelId, addNewChannel, removeChannel, setDefaultChannelId } = channelsSlice.actions
+export const { setActiveChannelId, addNewChannel, removeChannel, setDefaultChannelId, renameChannel } = channelsSlice.actions
 export default channelsSlice.reducer
