@@ -27,10 +27,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getChannels.rejected, (state, action) => {
-      console.log(action)
       const isUnauthorized = action.payload?.status === '401'
-      console.log(isUnauthorized)
-      console.log(state.isAuth)
       if (isUnauthorized) {
         state.isAuth = false;
         state.token = '';
