@@ -1,17 +1,18 @@
 import { useFormik } from 'formik';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useState } from 'react';
-import { setAuthStatus, setToken, setUsername } from '../slices/authSlice.jsx';
-import { useDispatch } from 'react-redux';
+import { login } from '../slices/authSlice.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import Header from './Header.jsx';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState('')
   const dispatch = useDispatch();
+  const {t} = useTranslation()
+  const error = useSelector(state => state.auth.error)
 
-  const renderError = (error) => {
+  const renderError = () => {
     return(
       <div className="text-danger small">{error}</div>
     )
@@ -23,62 +24,49 @@ const Login = () => {
       password: ''
     },
     onSubmit: async (values) => {
-      setError('')
-      try {
-        const response = await axios.post('/api/v1/login', values)
-        const token = response.data.token;
-        localStorage.setItem('userToken', token)
-        dispatch(setAuthStatus(true));
-        dispatch(setToken(token));
-        localStorage.setItem('username', values.username)
-        dispatch(setUsername(values.username))
-        navigate('/'); // Перенаправляем на главную страницу после успешного входа
-      } catch(err) {
-        dispatch(setAuthStatus(false));
-        dispatch(setToken(''));
-        dispatch(setUsername(''))
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('username');
-
-        if (err.response && err.response.status === 401) {
-          setError('Неверный логин или пароль');
-        } else {
-          setError(`Ошибка сервера: ${err.message}. Перезагруите страницу`);
-        }
-      }
+      await dispatch(login(values))
+      navigate('/'); // Перенаправляем на главную страницу после успешного входа
     },
   });
 
   return (
-    <Card>
-      <Card.Header>
-        <h1>Войти</h1>
-      </Card.Header>
-      <Card.Body>
-        <Form onSubmit={formik.handleSubmit}>
-          <FloatingLabel controlId='username' label='Ваш ник' className='mb-3'>
-            <Form.Control name="username" type="text" placeholder='Ваш ник'
-              onChange={formik.handleChange}
-              value={formik.values.username}
-            />
-          </FloatingLabel>
-          <FloatingLabel controlId='password' label='Пароль' className='mb-3'>
-            <Form.Control name="password" type="password" placeholder='Пароль'
-              onChange={formik.handleChange}
-              value={formik.values.password}
-            />
-          </FloatingLabel>
-          <Button type="submit" variant='secondary'>Войти</Button>
-          {renderError(error)}
-        </Form>
-      </Card.Body>
-      <Card.Footer>
-        <span>
-          Нет аккаунта?&nbsp;
-          <Link to='#' className="text-decoration-none">Регистрация</Link>
-        </span>
-      </Card.Footer>
-    </Card>
+    <>
+      <Header />
+      <Card>
+        <Card.Header>
+          <h1>{t('login')}</h1>
+        </Card.Header>
+        <Card.Body>
+          <Form onSubmit={formik.handleSubmit}>
+            <FloatingLabel controlId='username' label='Ваш ник' className='mb-3'>
+              <Form.Control name="username" type="text" placeholder='Ваш ник'
+                onChange={formik.handleChange}
+                value={formik.values.username}
+                required
+              />
+              <Form.Control.Feedback type="invalid">
+                {formik.errors.username}
+              </Form.Control.Feedback>
+            </FloatingLabel>
+            <FloatingLabel controlId='password' label='Пароль' className='mb-3'>
+              <Form.Control name="password" type="password" placeholder='Пароль'
+                onChange={formik.handleChange}
+                value={formik.values.password}
+                required
+              />
+            </FloatingLabel>
+            <Button type="submit" variant='secondary'>{t('login')}</Button>
+            {error ? renderError(error) : null}
+          </Form>
+        </Card.Body>
+        <Card.Footer>
+          <span>
+            Нет аккаунта?&nbsp;
+            <Link to='/signup' className="text-decoration-none">Регистрация</Link>
+          </span>
+        </Card.Footer>
+      </Card>
+    </>
   );
 };
 
