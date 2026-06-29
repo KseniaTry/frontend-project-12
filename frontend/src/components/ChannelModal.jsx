@@ -24,16 +24,16 @@ const ChannelModal = ({ show, onHide, type}) => {
 
   const schema = yup.object().shape({
     channelName: yup.string()
-      .required('Обязательное поле')
-      .min(3, 'От 3 до 20 символов')
-      .max(20, 'От 3 до 20 символов')
+      .min(3, t('validation.nameLength'))
+      .max(20, t('validation.nameLength'))
       .test(
         '',
-        "Должно быть уникальным",
+        t('validation.unique'),
         (value) => {
           return channels.every((channel) => channel.name !== value)
         }
       )
+      .required(t('validation.required'))
   })
 
   const formik = useFormik({
@@ -52,10 +52,10 @@ const ChannelModal = ({ show, onHide, type}) => {
       try {
         switch (type) {
           case 'add':
-            await dispatch(addChannel(newChannel))
+            await dispatch(addChannel(newChannel)).unwrap()
             break
           case 'rename':
-            await dispatch(editChannel({channelId: activeChannelId, editedChannel: newChannel}))
+            await dispatch(editChannel({channelId: activeChannelId, editedChannel: newChannel})).unwrap()
             break
           default: 
             console.log('type not exist')
@@ -97,10 +97,13 @@ const ChannelModal = ({ show, onHide, type}) => {
               type='text' 
               onChange={formik.handleChange}
               value={formik.values.channelName}
-              required></Form.Control>
-            {formik.touched.channelName && formik.errors.channelName ? (
-              <div className="text-danger small mt-1">{formik.errors.channelName}</div>
-            ) : <div className="p-2 mt-2"></div>}
+              isInvalid={formik.touched.channelName && formik.errors.channelName}
+              onBlur={formik.handleBlur}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.channelName}
+            </Form.Control.Feedback>
             <Form.Label></Form.Label>
           </Form.Group>
           {error ? <div>{error}</div> : null}

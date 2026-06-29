@@ -3,6 +3,17 @@ export const resources =  {
     translation: {
       delete: 'Удалить',
       rename: 'Переименовать',
+      login: 'Войти',
+      errors: {
+        server: 'Ошибка сервера. Попробуйте позже или обновите страницу'
+      },
+      registration: {
+        title: 'Регистрация',
+        button: 'Зарегистрироваться',
+        password: 'Пароль',
+        passwordConfirm: 'Подтвердите пароль',
+        username: 'Имя пользователя',
+      },
       messages: {
         messages_one: '{{count}} сообщение',
         messages_few: '{{count}} сообщения',
@@ -25,6 +36,14 @@ export const resources =  {
         reset: 'Отменить',
         send: 'Отправить'
       },
+      validation: {
+        required: 'Обязательное поле',
+        usernameLength: 'От 3 до 20 символов',
+        passwordLength: 'Не менее 6 символов',
+        usernameCheck: 'Пользователь с таким именем уже существует',
+        unique: 'Должно быть уникальным',
+        passwordConfirm: 'Пароли должны совпадать',
+      }
     }
   }
 }
