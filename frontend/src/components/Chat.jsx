@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState} from "react";
 import { getChannels } from "../slices/channelsSlice"
-import { selectAllChannels, setDefaultChannelId, addNewChannel, removeChannel, renameChannel } from "../slices/channelsSlice"
+import { addNewChannel, removeChannel, renameChannel } from "../slices/channelsSlice"
 import { Container, Row, Col } from 'react-bootstrap';
 import { socket } from '../socket';
 import Channels from './Channels';

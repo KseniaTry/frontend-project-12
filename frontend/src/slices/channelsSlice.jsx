@@ -112,7 +112,6 @@ const channelsSlice = createSlice({
       })
       .addCase(getChannels.fulfilled, (state, action) => { //  action.payload = response.data
         channelsAdapter.setAll(state, action.payload)
-        console.log(action.payload)
         channelsSlice.caseReducers.setDefaultChannelId(state) // вызываем обычный редьюсер внутри extra reducer 
         state.loadingStatus = 'idle'
       })
