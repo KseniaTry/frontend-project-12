@@ -1,4 +1,4 @@
-import { createSlice, createEntityAdapter, createAsyncThunk , current} from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter, createAsyncThunk} from '@reduxjs/toolkit'
 import axios from 'axios'
 
 const usersAdapter = createEntityAdapter()
@@ -12,9 +12,6 @@ export const createNewUser = createAsyncThunk(
         { username,  password })
       return response.data  // => { token: ..., username: 'newuser' }
     } catch(err) {
-      // с помощью thunkAPI мы получаем конкретный код ошибки (401), 
-      // чтобы далее можно было корректно ее обработать и сделать 
-      // перенаправление на страницу Login при отсутствии токена авторизации
       return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
     }
   })

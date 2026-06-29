@@ -6,18 +6,13 @@ import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import * as yup from 'yup';
 import { createNewUser } from "../slices/usersSlice";
+import Error from "./Error";
 
 const Registration = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {t} = useTranslation()
   const error = useSelector(state => state.users?.error)
-
-  const renderError = (error) => {
-    return(
-      <div className="text-danger small">{error}</div>
-    )
-  }
 
   const schema = yup.object().shape({
     username: yup.string()
@@ -44,16 +39,13 @@ const Registration = () => {
         username: values.username,
         password: values.password
       }
-      console.log(newUser)
       try {
         await dispatch(createNewUser(newUser)).unwrap()
         navigate('/') 
       } catch(err) {
         if (err?.status === 409) {
           setErrors({ username: t('validation.usernameCheck') });
-        } else {
-          setErrors({ username: t('errors.server') });
-        }
+        } 
       } finally {
         setSubmitting(false);
       }
@@ -111,7 +103,7 @@ const Registration = () => {
               disabled={formik.isSubmitting}>
               {t('registration.button')}
             </Button>
-            {error ? renderError(error): null}
+            {error ? <Error error={error}/> : null}
           </Form>
         </Card.Body>
       </Card>

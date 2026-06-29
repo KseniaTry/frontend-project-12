@@ -4,14 +4,13 @@ import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { addChannel, selectAllChannels, editChannel, selectChannelById } from "../slices/channelsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
 import * as yup from 'yup';
+import Error from "./Error";
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
   const dispatch = useDispatch()
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const error = useSelector(state => state.channels?.error)
   const channels = useSelector(selectAllChannels)
   const activeChannelId = localStorage.getItem('activeChannel')
   const activeChannel = useSelector((state) => {
@@ -42,35 +41,26 @@ const ChannelModal = ({ show, onHide, type}) => {
     },
     validationSchema: schema,
     enableReinitialize: true, // нужно для того чтобы при переименовании отобразилось имя текущего канала (тк данные приходят не сразу)
-    onSubmit: async (values) => {
-      setError('')
-             
+    onSubmit: async (values, {setSubmitting}) => {     
       const newChannel = {
         name: values.channelName
       }
 
-      try {
-        switch (type) {
-          case 'add':
-            await dispatch(addChannel(newChannel)).unwrap()
-            break
-          case 'rename':
-            await dispatch(editChannel({channelId: activeChannelId, editedChannel: newChannel})).unwrap()
-            break
-          default: 
-            console.log('type not exist')
-            break
-        }
-   
-        setIsLoading(true)
-        formik.resetForm()
-        onHide()
-      } catch(err) {
-        setIsLoading(false)
-        setError(`Ошибка сервера: ${err.message}. Перезагруите страницу`);
-      } finally {
-        setIsLoading(false)
+      switch (type) {
+        case 'add':
+          await dispatch(addChannel(newChannel))
+          break
+        case 'rename':
+          await dispatch(editChannel({channelId: activeChannelId, editedChannel: newChannel}))
+          break
+        default: 
+          console.log('type not exist')
+          break
       }
+  
+      formik.resetForm()
+      onHide()
+      setSubmitting(false);
     },
   });
 
@@ -106,10 +96,10 @@ const ChannelModal = ({ show, onHide, type}) => {
             </Form.Control.Feedback>
             <Form.Label></Form.Label>
           </Form.Group>
-          {error ? <div>{error}</div> : null}
+          {error ? <Error error={error}/> : null}
           <div className="d-flex gap-2 justify-content-end">
             <Button variant="secondary" onClick={onHide}>{t('channelModal.reset')}</Button>
-            <Button variant='primary' type='submit' disabled={isLoading}>{t('channelModal.send')}</Button>
+            <Button variant='primary' type='submit' disabled={formik.isSubmitting}>{t('channelModal.send')}</Button>
           </div>
         </Form>
       </Modal.Body>
