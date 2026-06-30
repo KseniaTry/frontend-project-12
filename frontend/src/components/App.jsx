@@ -3,7 +3,6 @@ import Login from './Login';
 import NotFound from './NotFound';
 import Chat from './Chat';
 import Registration from './Registration';
-
 import { useSelector } from 'react-redux';
 
 // компонент, который проверяет авторизацию и либо отображает дочерние компоненты, либо перенаправляет на страницу входа
