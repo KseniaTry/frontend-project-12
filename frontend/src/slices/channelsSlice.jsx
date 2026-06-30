@@ -80,20 +80,20 @@ const channelsSlice = createSlice({
   initialState: channelsAdapter.getInitialState({
     loadingStatus: false,
     error: null,
-    activeChannelId: ''
+    activeChannelId: localStorage.getItem('activeChannelId') || 1
   }),
   reducers: {
     setDefaultChannelId: (state) => {
-      const channels = channelsAdapter.getSelectors().selectAll(state)
-      const defaultActiveChannel = channels.find((channel) => channel.name === 'general');
+      const channels = Object.values(state.entities)
+      const defaultActiveChannel = channels.find((channel) => channel.name === 'general')
       state.activeChannelId = defaultActiveChannel?.id || null
     },
     setActiveChannelId: (state, action) => {
-      localStorage.setItem('activeChannel', action.payload)
       state.activeChannelId = action.payload
     },
     addNewChannel: (state, action) => {
       console.log('Текущие каналы:', current(state.entities));
+      state.activeChannelId = action.payload.id
       channelsAdapter.addOne(state, action.payload)
     },
     removeChannel: (state, action) => {
@@ -125,6 +125,7 @@ const channelsSlice = createSlice({
       })
       .addCase(addChannel.fulfilled, (state, action) => {
         channelsAdapter.addOne(state, action.payload)
+        state.activeChannelId = action.payload.id
         state.loadingStatus = 'idle'
       })
       .addCase(addChannel.rejected, (state, action) => {

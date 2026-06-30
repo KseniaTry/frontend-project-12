@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import ChannelModal from "./ChannelModal";
+import ErrorAlert from "./ErrorAlert";
 
 const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
   const {t} = useTranslation()
@@ -15,8 +16,9 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
 
   const handleDelete = async () => {
     try {
-      await dispatch(removeChannelFromServer(channel.id))
+      await dispatch(removeChannelFromServer(channel.id)).unwrap()
       dispatch(setDefaultChannelId())
+      localStorage.setItem('activeChannel', 1)
       setIsLoading(true)
     } catch(err) {
       setIsLoading(false)
@@ -29,18 +31,35 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
   return (
     <>
       <Dropdown as={ButtonGroup} className='d-flex d-flex align-items-center justify-content-between w-100 mb-1'>
-        <Button variant="secondary" onClick={() => handleClickChannel(channel.id)} className= {`text-start text-dark bg-transparent p-0 border-0 shadow-none w-100 ${isActive ? 'text-white' : 'text-dark'}`}># {channel.name}</Button>
-        {error ? <div>{error}</div> : null} 
-        <Dropdown.Toggle variant='secondary' id="dropdown-channel" className={`bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
-          {/* должна быть модалка с ошибкой ! */}
+        <Button
+          variant="secondary" 
+          onClick={() => handleClickChannel(channel.id)} 
+          className= {`text-start text-dark bg-transparent p-0 border-0 shadow-none w-100 ${isActive ? 'text-white' : 'text-dark'}`}>
+          # {channel.name}
+        </Button>
+        <Dropdown.Toggle
+          variant='secondary'
+          id="dropdown-channel" 
+          className={`bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
         </Dropdown.Toggle>
 
         <Dropdown.Menu className='w-100'>
-          <Dropdown.Item as='button' onClick={handleDelete} disabled={isLoading}>{t('delete')}</Dropdown.Item>
-          <Dropdown.Item as='button' onClick={() => setModalShow(true)}>{t('rename')}</Dropdown.Item>
+          <Dropdown.Item as='button' 
+            onClick={handleDelete}
+            disabled={isLoading}>
+            {t('delete')}
+          </Dropdown.Item>
+          <Dropdown.Item as='button' 
+            onClick={() => setModalShow(true)}>
+            {t('rename')}
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
-      <ChannelModal show={modalShow} onHide={() => setModalShow(false)} type='rename'/>
+      <ChannelModal 
+        show={modalShow} 
+        onHide={() => setModalShow(false)} 
+        type='rename'/>
+      {error ? <ErrorAlert error={error} /> : null}
     </>
   )
 }

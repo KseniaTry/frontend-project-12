@@ -14,8 +14,8 @@ const Messages = ({isSocketConnected}) => {
   const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('')
-  const activeChannelId = localStorage.getItem('activeChannel')
-  const username = useSelector(state => state.auth.username)
+  const activeChannelId = useSelector(state => state.channels.activeChannelId)
+  const username = useSelector(state => state.auth.currentUsername)
   const activeChannel = useSelector(state => selectChannelById(state, activeChannelId))
   const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
   const messagesCount = messagesByChannel.length

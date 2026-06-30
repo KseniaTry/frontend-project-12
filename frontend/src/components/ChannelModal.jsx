@@ -12,7 +12,7 @@ const ChannelModal = ({ show, onHide, type}) => {
   const dispatch = useDispatch()
   const error = useSelector(state => state.channels?.error)
   const channels = useSelector(selectAllChannels)
-  const activeChannelId = localStorage.getItem('activeChannel')
+  const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const activeChannel = useSelector((state) => {
     if (activeChannelId)  {
       return  selectChannelById(state, activeChannelId)
@@ -45,10 +45,12 @@ const ChannelModal = ({ show, onHide, type}) => {
       const newChannel = {
         name: values.channelName
       }
+      let response
 
       switch (type) {
         case 'add':
-          await dispatch(addChannel(newChannel))
+          response = await dispatch(addChannel(newChannel))
+          localStorage.setItem('activeChannel', response.payload.id)
           break
         case 'rename':
           await dispatch(editChannel({channelId: activeChannelId, editedChannel: newChannel}))

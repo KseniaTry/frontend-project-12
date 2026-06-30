@@ -2,16 +2,17 @@ import { useFormik } from 'formik';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../slices/authSlice.jsx';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Header from './Header.jsx';
 import Error from './Error.jsx';
+import { useState } from 'react';
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {t} = useTranslation()
-  const error = useSelector(state => state.auth?.error)
+  const [error, setError] = useState('')
 
   const formik = useFormik({
     initialValues: {
@@ -19,9 +20,24 @@ const Login = () => {
       password: ''
     },
     onSubmit: async (values, {setSubmitting}) => {
-      await dispatch(login(values))
-      setSubmitting(false);
-      navigate('/'); // Перенаправляем на главную страницу после успешного входа
+      try {
+        const response = await dispatch(login(values)).unwrap()
+        const token = response.token
+        console.log(token)
+        localStorage.setItem('userToken', token)
+        localStorage.setItem('username', values.username)  
+        setSubmitting(false);
+        navigate('/'); // Перенаправляем на главную страницу после успешного входа
+      } catch(err) {
+        if (err?.status === 401 || err?.statusCode === 401) {
+          setError(t('errors.login'));
+        } else {
+          const msg = err?.message || err?.error || t('errors.undefined');
+          setError(t('errors.server', {error: msg}));
+        }
+        localStorage.removeItem('userToken')
+        localStorage.removeItem('username')
+      }
     },
   });
 
@@ -34,8 +50,8 @@ const Login = () => {
         </Card.Header>
         <Card.Body>
           <Form onSubmit={formik.handleSubmit}>
-            <FloatingLabel controlId='username' label='Ваш ник' className='mb-3'>
-              <Form.Control name="username" type="text" placeholder='Ваш ник'
+            <FloatingLabel controlId='username' label={t('loginForm.nickname')} className='mb-3'>
+              <Form.Control name="username" type="text" placeholder={t('loginForm.nickname')}
                 onChange={formik.handleChange}
                 value={formik.values.username}
                 required
@@ -44,8 +60,8 @@ const Login = () => {
                 {formik.errors.username}
               </Form.Control.Feedback>
             </FloatingLabel>
-            <FloatingLabel controlId='password' label='Пароль' className='mb-3'>
-              <Form.Control name="password" type="password" placeholder='Пароль'
+            <FloatingLabel controlId='password' label={t('loginForm.password')} className='mb-3'>
+              <Form.Control name="password" type="password" placeholder={t('loginForm.password')}
                 onChange={formik.handleChange}
                 value={formik.values.password}
                 required
@@ -57,8 +73,8 @@ const Login = () => {
         </Card.Body>
         <Card.Footer>
           <span>
-            Нет аккаунта?&nbsp;
-            <Link to='/signup' className="text-decoration-none">Регистрация</Link>
+            {t('loginForm.question')}&nbsp;
+            <Link to='/signup' className="text-decoration-none">{t('loginForm.registration')}</Link>
           </span>
         </Card.Footer>
       </Card>

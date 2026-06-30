@@ -12,10 +12,11 @@ const Channels = () => {
   const dispatch = useDispatch()
   const channels = useSelector(selectAllChannels)
   const [modalShow, setModalShow] = useState(false);
-  const activeChannelId = localStorage.getItem('activeChannel')
+  const activeChannelId = useSelector(state => state.channels.activeChannelId)
 
   const handleClickChannel = (channelId) => {
     dispatch(setActiveChannelId(channelId))
+    localStorage.setItem('activeChannel', channelId)
   }
 
   return(
