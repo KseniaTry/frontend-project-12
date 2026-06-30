@@ -4,8 +4,21 @@ export const resources =  {
       delete: 'Удалить',
       rename: 'Переименовать',
       login: 'Войти',
+      logout: 'Выйти',
+      close: 'Закрыть',
       errors: {
-        server: 'Ошибка сервера. Попробуйте позже или обновите страницу'
+        server: 'Ошибка {{error}}. Попробуйте позже или обновите страницу',
+        loading: 'Идет загрузка каналов...',
+        login: 'Неверный логин или пароль',
+        undefined: 'Неизвестная ошибка',
+        notFound: '404 (not found)',
+        title: 'Error'
+      },
+      loginForm: {
+        registration: 'Регистрация',
+        question: 'Нет аккаунта?',
+        password: 'Пароль',
+        nickname: 'Ваш ник'
       },
       registration: {
         title: 'Регистрация',

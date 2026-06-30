@@ -8,11 +8,13 @@ import Channels from './Channels';
 import Messages from "./Messages";
 import Header from "./Header";
 import { getMessages, addMessage } from "../slices/messagesSlice";
+import { useTranslation } from "react-i18next";
 
 const Chat = () => {
   const dispatch = useDispatch()
   const {loadingStatus} = useSelector(state => state.channels)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
+  const {t} = useTranslation()
 
   // загружаем исходные данные единожды
   useEffect(() => {
@@ -72,7 +74,7 @@ const Chat = () => {
       <Header />
       <Row className="flex-grow-1 m-4 bg-light border-light-subtle rounded-3 shadow" style={{ minHeight: 0 }}>
         <Col xs={4} md={4} className="p-4 border-end border-secondary-subtle h-100 d-flex flex-column" style={{ minHeight: 0 }}>
-          {loadingStatus === 'loading' && <p>Loading channels...</p>}
+          {loadingStatus === 'loading' && <p>{t('errors.loading')}</p>}
           <Channels />
         </Col>
         <Col xs={8} md={8} className="h-100 d-flex flex-column p-0" style={{ minHeight: 0 }}>
