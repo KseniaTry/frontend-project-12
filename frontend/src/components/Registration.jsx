@@ -1,18 +1,20 @@
 import { Card, Form , FloatingLabel, Button} from "react-bootstrap"
 import { useFormik } from "formik";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import * as yup from 'yup';
 import { createNewUser } from "../slices/usersSlice";
 import Error from "./Error";
+import { useState } from "react";
+import { setAuthStatus } from "../slices/authSlice";
 
 const Registration = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {t} = useTranslation()
-  const error = useSelector(state => state.users?.error)
+  const [error, setError] = useState('')
 
   const schema = yup.object().shape({
     username: yup.string()
@@ -40,12 +42,17 @@ const Registration = () => {
         password: values.password
       }
       try {
-        await dispatch(createNewUser(newUser)).unwrap()
+        const response =  await dispatch(createNewUser(newUser)).unwrap()
+        localStorage.setItem('userToken', response.token)
+        localStorage.setItem('username', response.username)
+        dispatch(setAuthStatus(true))
         navigate('/') 
       } catch(err) {
         if (err?.status === 409) {
           setErrors({ username: t('validation.usernameCheck') });
-        } 
+        } else {
+          setError(t('errors.server', {error: err.message}))
+        }
       } finally {
         setSubmitting(false);
       }
