@@ -20,7 +20,8 @@ const usersSlice = createSlice({
   name: 'users',
   initialState: usersAdapter.getInitialState({
     loadingStatus: false,
-    error: null,
+    errorText: null,
+    errorStatus: null
   }),
   reducers: {
     addNewUser: (state, action) => {
@@ -40,7 +41,9 @@ const usersSlice = createSlice({
       })
       .addCase(createNewUser.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.payload.status === 409 ? 'Пользователь уже существует' : `Ошибка сервера: ${action.payload.error}. Перезагруите страницу` 
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
+        // state.error = action.payload.status === 409 ? 'Пользователь уже существует' : `Ошибка сервера: ${action.payload.error}. Перезагруите страницу` 
       })
   }
 })

@@ -5,24 +5,26 @@ import { useDispatch } from 'react-redux';
 import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import ChannelModal from "./ChannelModal";
-import ErrorAlert from "./ErrorAlert";
+// import ErrorAlert from "./ErrorAlert";
+import { toast } from 'react-toastify';
 
 const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
   const {t} = useTranslation()
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false);
   const [modalShow, setModalShow] = useState(false);
-  const [error, setError] = useState('')
+  // const [error, setError] = useState('')
 
   const handleDelete = async () => {
     try {
+      setIsLoading(true)
       await dispatch(removeChannelFromServer(channel.id)).unwrap()
       dispatch(setDefaultChannelId())
       localStorage.setItem('activeChannel', 1)
-      setIsLoading(true)
-    } catch(err) {
+      toast.success(t('notifications.success.channelDelete'))
+    } catch {
       setIsLoading(false)
-      setError(err.message)
+      toast.error(t('errors.removeChannel'))
     } finally {
       setIsLoading(false)
     }
@@ -59,7 +61,7 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
         show={modalShow} 
         onHide={() => setModalShow(false)} 
         type='rename'/>
-      {error ? <ErrorAlert error={error} /> : null}
+      {/* {error ? <ErrorAlert error={error} /> : null} */}
     </>
   )
 }

@@ -4,7 +4,7 @@ const NotFound = () => {
   const {t} = useTranslation()
 
   return(
-    <div>{t('errors.notFound')}</div>
+    <div>{t('errors.404')}</div>
   )
 }
 

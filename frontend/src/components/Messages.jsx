@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { sendMessage, selectMessagesByChannel } from "../slices/messagesSlice";
 import { selectChannelById } from "../slices/channelsSlice";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 // пример сообщения
 // const newMessage = { body: 'new message', channelId: '1', username: 'admin }; 
@@ -13,12 +14,12 @@ const Messages = ({isSocketConnected}) => {
   const dispatch = useDispatch()
   const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('')
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const username = useSelector(state => state.auth.currentUsername)
   const activeChannel = useSelector(state => selectChannelById(state, activeChannelId))
   const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
   const messagesCount = messagesByChannel.length
+  const messagesError = useSelector(state => state.messages.error)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,15 +31,17 @@ const Messages = ({isSocketConnected}) => {
     }
 
     try {
-      await dispatch(sendMessage(newMessage))
-      setValue('')
       setIsLoading(true)
-    } catch(err) {
+      await dispatch(sendMessage(newMessage)).unwrap()
+      setValue('')
+    } catch {
       setIsLoading(false)
-      setError(err.message)
+      toast.error(t('errors.messageSend'))
     } finally {
       setIsLoading(false)
     }
+
+    messagesError ? toast.error(t('errors.sendMessage')) : null
   }
     
   return(
@@ -48,7 +51,6 @@ const Messages = ({isSocketConnected}) => {
         <p> {t('messages.messages', { count: messagesCount })}</p>
       </div>
       <div className="flex-grow-1 flex-shrink-1 p-4 bg-white w-100 overflow-auto">
-        {error ? <div>{error}</div> : null}
         {isSocketConnected ? <div>{t('messages.errorSocket')}</div> : null}
         <ListGroup as="ul">
           {messagesByChannel.map((message) => {

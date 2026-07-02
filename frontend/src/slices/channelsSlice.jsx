@@ -15,10 +15,19 @@ export const getChannels = createAsyncThunk(
       });
       return response.data
     } catch(err) {
-      // с помощью thunkAPI мы получаем конкретный код ошибки (401), 
-      // чтобы далее можно было корректно ее обработать и сделать 
-      // перенаправление на страницу Login при отсутствии токена авторизации
-      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+      if (err.response) {
+        // Ошибка от сервера (401, 404, 500 и т.д.)
+        return thunkAPI.rejectWithValue({ 
+          status: err.response?.status, 
+          data: err.response?.data 
+        });
+      }
+      
+      // Ошибка сети или сломанный URL (клиентская ошибка, нет ответа от сервера)
+      return thunkAPI.rejectWithValue({ 
+        status: 'NETWORK_ERROR', 
+        data: err.message || 'Не удалось связаться с сервером' 
+      });
     }
   })
 
@@ -79,7 +88,8 @@ const channelsSlice = createSlice({
   name: 'channels',
   initialState: channelsAdapter.getInitialState({
     loadingStatus: false,
-    error: null,
+    errorText: null,
+    errorStatus: null,
     activeChannelId: localStorage.getItem('activeChannelId') || 1
   }),
   reducers: {
@@ -111,13 +121,21 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(getChannels.fulfilled, (state, action) => { //  action.payload = response.data
+        if (!action.payload || !Array.isArray(action.payload)) {
+          state.loadingStatus = 'failed';
+          state.error = 'Получены некорректные данные с сервера';
+          return; // Выходим из редюсера, предотвращая вызов адаптера
+        }
+
         channelsAdapter.setAll(state, action.payload)
         channelsSlice.caseReducers.setDefaultChannelId(state) // вызываем обычный редьюсер внутри extra reducer 
         state.loadingStatus = 'idle'
       })
       .addCase(getChannels.rejected, (state, action) => {
+        console.log('rejected')
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
     // добавление канала
       .addCase(addChannel.pending, (state) => {
@@ -130,7 +148,8 @@ const channelsSlice = createSlice({
       })
       .addCase(addChannel.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
       // удаление канала
       .addCase(removeChannelFromServer.pending, (state) => {
@@ -142,7 +161,8 @@ const channelsSlice = createSlice({
       })
       .addCase(removeChannelFromServer.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
     // переименование канала
       .addCase(editChannel.pending, (state) => {
@@ -155,19 +175,17 @@ const channelsSlice = createSlice({
       })
       .addCase(editChannel.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
   }
 })
 
-// 1. Создаем базовые селекторы адаптера
 const baseSelectors = channelsAdapter.getSelectors((state) => state.channels);
 
-// 2. Экспортируем их с понятными именами
 export const {
   selectAll: selectAllChannels,      // Возвращает МАССИВ всех каналов (уже готовый для .map)
   selectById: selectChannelById,    // Находит один канал по его ID
-  // selectIds: selectChannelIds        // Возвращает массив только с ID каналов
 } = baseSelectors;
 
 export const { setActiveChannelId, addNewChannel, removeChannel, setDefaultChannelId, renameChannel } = channelsSlice.actions

@@ -12,6 +12,7 @@ export const getMessages = createAsyncThunk(
   'messages/getMessages', 
   async (_, thunkAPI) => {
     try {
+      // throw { response: { status: 500, data: 'Ошибка базы данных' } };
       const state = thunkAPI.getState()
       const response = await axios.get('/api/v1/messages', {
         headers: {
@@ -20,10 +21,19 @@ export const getMessages = createAsyncThunk(
       });
       return response.data
     } catch(err) {
-      // с помощью thunkAPI мы получаем конкретный код ошибки (401), 
-      // чтобы далее можно было корректно ее обработать и сделать 
-      // перенаправление на страницу Login при отсутствии токена авторизации
-      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+      if (err.response) {
+        // Ошибка от сервера (401, 404, 500 и т.д.)
+        return thunkAPI.rejectWithValue({ 
+          status: err.response?.status, 
+          data: err.response?.data 
+        });
+      }
+      
+      // Ошибка сети или сломанный URL (клиентская ошибка, нет ответа от сервера)
+      return thunkAPI.rejectWithValue({ 
+        status: 'NETWORK_ERROR', 
+        data: err.message || 'Не удалось связаться с сервером' 
+      });
     }
   })
 
@@ -32,7 +42,7 @@ export const sendMessage = createAsyncThunk(
   async(newMessage, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.post('/api/v1/messages', newMessage, {
+      const response = await axios.post('/api/v1/message', newMessage, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -40,7 +50,10 @@ export const sendMessage = createAsyncThunk(
     
       return response.data
     } catch(err) {
-      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+      return thunkAPI.rejectWithValue({ 
+        status: err.response?.status, 
+        data: err.response?.data 
+      }) 
     }
   }
 )
@@ -57,7 +70,10 @@ export const deleteMessage = createAsyncThunk(
       })
       return response.data
     } catch(err) {
-      return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 
+      return thunkAPI.rejectWithValue({ 
+        status: err.response?.status, 
+        data: err.response?.data 
+      }) 
     }
   }
 )
@@ -66,11 +82,11 @@ const messagesSlice = createSlice({
   name: 'messages',
   initialState: messagesAdapter.getInitialState({
     loadingStatus: false,
-    error: null,
+    errorText: null,
+    errorStatus: null
   }),
   reducers: {
     addMessage: (state, action) => {
-      console.log('Текущие сообщ:', current(state.entities));
       messagesAdapter.addOne(state, action.payload)
     }
   },
@@ -81,24 +97,36 @@ const messagesSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(getMessages.fulfilled, (state, action) => { //  action.payload = response.data
+        if (!action.payload || !Array.isArray(action.payload)) {
+          state.loadingStatus = 'failed';
+          state.errorText = 'Получены некорректные данные с сервера';
+          return; // Выходим из редюсера, предотвращая вызов адаптера
+        }
         messagesAdapter.setAll(state, action.payload)
         state.loadingStatus = 'idle'
       })
       .addCase(getMessages.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
       // отправка сообщения
       .addCase(sendMessage.pending, (state) => {
         state.loadingStatus = 'loading'
       })
       .addCase(sendMessage.fulfilled, (state, action) => { 
+        if (!action.payload || !Array.isArray(action.payload)) {
+          state.loadingStatus = 'failed';
+          state.errorText = 'Ошибка сервера';
+          return; // Выходим из редюсера, предотвращая вызов адаптера
+        }
         messagesAdapter.addOne(state, action.payload)
         state.loadingStatus = 'idle'
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
       // удаление сообщения
       .addCase(deleteMessage.pending, (state) => {
@@ -110,7 +138,8 @@ const messagesSlice = createSlice({
       })
       .addCase(deleteMessage.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.error = action.error ? action.error.message : null
+        state.errorText = action.payload ? action.payload.data : null
+        state.errorStatus = action.payload ? action.payload.status : null
       })
       // удаление всех сообщений при удалении канала
       .addCase(removeChannel, (state, action) => {

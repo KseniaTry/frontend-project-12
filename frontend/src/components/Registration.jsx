@@ -49,9 +49,9 @@ const Registration = () => {
         navigate('/') 
       } catch(err) {
         if (err?.status === 409) {
-          setErrors({ username: t('validation.usernameCheck') });
+          setErrors({ username: t('validation.usernameCheck') }); // показываем в интерфейсе
         } else {
-          setError(t('errors.server', {error: err.message}))
+          setError(t('errors.server', {error: err.message})) // показываем в интерфейсе
         }
       } finally {
         setSubmitting(false);

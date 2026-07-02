@@ -6,13 +6,26 @@ export const resources =  {
       login: 'Войти',
       logout: 'Выйти',
       close: 'Закрыть',
+      notifications: {
+        success: {
+          channelAdd: 'Канал добавлен!',
+          channelRename: 'Канал переименован',
+          channelDelete: 'Канал удален'
+        }
+      },
       errors: {
         server: 'Ошибка {{error}}. Попробуйте позже или обновите страницу',
-        loading: 'Идет загрузка каналов...',
+        loading: 'Идет загрузка...',
         login: 'Неверный логин или пароль',
         undefined: 'Неизвестная ошибка',
-        notFound: '404 (not found)',
-        title: 'Error'
+        404: '404 (not found)',
+        500: 'Не удалось выполнить запрос',
+        channelsLoading: 'Не удалось загрузить каналы',
+        messagesLoading: 'Не удалось загрузить сообщения',
+        messageSend: 'Не удалось отправить сообщение',
+        channelRemove: 'Не удалось удалить канал',
+        channelAdd: 'Не удалось добавить канал',
+        channelRename: 'Не удалось переименовать канал'
       },
       loginForm: {
         registration: 'Регистрация',

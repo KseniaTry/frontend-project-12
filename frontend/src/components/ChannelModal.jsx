@@ -6,6 +6,7 @@ import { addChannel, selectAllChannels, editChannel, selectChannelById } from ".
 import { useDispatch, useSelector } from "react-redux";
 import * as yup from 'yup';
 import Error from "./Error";
+import { toast } from "react-toastify";
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
@@ -35,6 +36,25 @@ const ChannelModal = ({ show, onHide, type}) => {
       .required(t('validation.required'))
   })
 
+  const handleAddChannel = async (newChannel) => {
+    try {
+      const response = await dispatch(addChannel(newChannel)).unwrap()
+      localStorage.setItem('activeChannel', response.id);
+      toast.success(t('notifications.success.channelAdd'));
+    } catch {
+      toast.error(t('errors.channelAdd'))
+    }
+  };
+
+  const handleRenameChannel = async (activeChannelId, newChannel) => {
+    try {
+      await dispatch(editChannel({ channelId: activeChannelId, editedChannel: newChannel })).unwrap()
+      toast.success(t('notifications.success.channelRename'));
+    } catch {
+      toast.error(t('errors.channelRename'))
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       channelName: type === 'rename' ? activeChannel?.name : '',
@@ -45,15 +65,13 @@ const ChannelModal = ({ show, onHide, type}) => {
       const newChannel = {
         name: values.channelName
       }
-      let response
 
       switch (type) {
         case 'add':
-          response = await dispatch(addChannel(newChannel))
-          localStorage.setItem('activeChannel', response.payload.id)
+          handleAddChannel(newChannel)
           break
         case 'rename':
-          await dispatch(editChannel({channelId: activeChannelId, editedChannel: newChannel}))
+          handleRenameChannel(activeChannelId, newChannel)
           break
         default: 
           console.log('type not exist')

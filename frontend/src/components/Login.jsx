@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Header from './Header.jsx';
 import Error from './Error.jsx';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Login = () => {
       password: ''
     },
     onSubmit: async (values, {setSubmitting}) => {
+      setError('')
       try {
         const response = await dispatch(login(values)).unwrap()
         const token = response.token
@@ -27,13 +29,16 @@ const Login = () => {
         localStorage.setItem('userToken', token)
         localStorage.setItem('username', values.username)  
         setSubmitting(false);
-        navigate('/'); // Перенаправляем на главную страницу после успешного входа
+        navigate('/'); // перенаправляем на главную страницу после успешного входа
       } catch(err) {
+        console.log(err)
         if (err?.status === 401 || err?.statusCode === 401) {
-          setError(t('errors.login'));
+          setError(t('errors.login')); // показываем ошибку в интерфейсе
+        } else if (err?.status === 500 || err?.status === 502) {
+          toast.error(t('errors.500'))
         } else {
           const msg = err?.message || err?.error || t('errors.undefined');
-          setError(t('errors.server', {error: msg}));
+          toast.error(t('errors.server', {error: msg}));
         }
         localStorage.removeItem('userToken')
         localStorage.removeItem('username')

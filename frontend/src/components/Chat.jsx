@@ -9,18 +9,34 @@ import Messages from "./Messages";
 import Header from "./Header";
 import { getMessages, addMessage } from "../slices/messagesSlice";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const Chat = () => {
   const dispatch = useDispatch()
   const {loadingStatus} = useSelector(state => state.channels)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
   const {t} = useTranslation()
+  const channelsError = useSelector(state => state.channels.errorText)
+  const messagesError = useSelector(state => state.messages.errorText)
 
   // загружаем исходные данные единожды
   useEffect(() => {
-    dispatch(getChannels())
-    dispatch(getMessages())
-  }, [dispatch])
+    dispatch(getChannels());
+    dispatch(getMessages());
+  }, [dispatch]);
+
+  // следим за ошибками из слайса
+  useEffect(() => {
+    if (channelsError) {
+      toast.error(t('errors.channelsLoading'));
+    }
+  }, [channelsError, t]);
+
+  useEffect(() => {
+    if (messagesError) {
+      toast.error(t('errors.messagesLoading'));
+    }
+  }, [messagesError, t]);
 
   // сокет подписки 
   useEffect(() => {
