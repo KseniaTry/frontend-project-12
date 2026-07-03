@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as yup from 'yup';
 import Error from "./Error";
 import { toast } from "react-toastify";
+import initLeoProfanity from "../profanity";
+import filter from 'leo-profanity'
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
@@ -21,6 +23,8 @@ const ChannelModal = ({ show, onHide, type}) => {
       return null
     }
   })
+
+  initLeoProfanity()
 
   const schema = yup.object().shape({
     channelName: yup.string()
@@ -63,7 +67,7 @@ const ChannelModal = ({ show, onHide, type}) => {
     enableReinitialize: true, // нужно для того чтобы при переименовании отобразилось имя текущего канала (тк данные приходят не сразу)
     onSubmit: async (values, {setSubmitting}) => {     
       const newChannel = {
-        name: values.channelName
+        name: filter.clean(values.channelName, '*', 1)
       }
 
       switch (type) {

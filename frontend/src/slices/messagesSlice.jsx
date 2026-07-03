@@ -42,7 +42,7 @@ export const sendMessage = createAsyncThunk(
   async(newMessage, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.post('/api/v1/message', newMessage, {
+      const response = await axios.post('/api/v1/messages', newMessage, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -99,8 +99,9 @@ const messagesSlice = createSlice({
       .addCase(getMessages.fulfilled, (state, action) => { //  action.payload = response.data
         if (!action.payload || !Array.isArray(action.payload)) {
           state.loadingStatus = 'failed';
+
           state.errorText = 'Получены некорректные данные с сервера';
-          return; // Выходим из редюсера, предотвращая вызов адаптера
+          return;
         }
         messagesAdapter.setAll(state, action.payload)
         state.loadingStatus = 'idle'
@@ -118,7 +119,7 @@ const messagesSlice = createSlice({
         if (!action.payload || !Array.isArray(action.payload)) {
           state.loadingStatus = 'failed';
           state.errorText = 'Ошибка сервера';
-          return; // Выходим из редюсера, предотвращая вызов адаптера
+          return;
         }
         messagesAdapter.addOne(state, action.payload)
         state.loadingStatus = 'idle'

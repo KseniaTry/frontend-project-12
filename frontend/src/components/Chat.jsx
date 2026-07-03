@@ -16,8 +16,8 @@ const Chat = () => {
   const {loadingStatus} = useSelector(state => state.channels)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
   const {t} = useTranslation()
-  const channelsError = useSelector(state => state.channels.errorText)
-  const messagesError = useSelector(state => state.messages.errorText)
+  const channelsError = useSelector(state => state.channels.errorStatus)
+  const messagesError = useSelector(state => state.messages.errorStatus)
 
   // загружаем исходные данные единожды
   useEffect(() => {

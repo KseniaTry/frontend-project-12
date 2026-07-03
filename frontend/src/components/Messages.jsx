@@ -5,14 +5,13 @@ import { sendMessage, selectMessagesByChannel } from "../slices/messagesSlice";
 import { selectChannelById } from "../slices/channelsSlice";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-
-// пример сообщения
-// const newMessage = { body: 'new message', channelId: '1', username: 'admin }; 
+import filter from 'leo-profanity';
+import initLeoProfanity from "../profanity";
 
 const Messages = ({isSocketConnected}) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const dispatch = useDispatch()
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState('')
   const [isLoading, setIsLoading] = useState(false);
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const username = useSelector(state => state.auth.currentUsername)
@@ -21,11 +20,13 @@ const Messages = ({isSocketConnected}) => {
   const messagesCount = messagesByChannel.length
   const messagesError = useSelector(state => state.messages.error)
 
+  initLeoProfanity()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newMessage = {
-      body: value,
+      body: filter.clean(value, '*', 1),
       channelId: activeChannelId,
       username: username
     }
