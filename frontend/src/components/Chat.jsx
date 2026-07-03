@@ -10,14 +10,18 @@ import Header from "./Header";
 import { getMessages, addMessage } from "../slices/messagesSlice";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useRollbar } from '@rollbar/react';
 
 const Chat = () => {
   const dispatch = useDispatch()
+  const rollbar = useRollbar()
   const {loadingStatus} = useSelector(state => state.channels)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
   const {t} = useTranslation()
-  const channelsError = useSelector(state => state.channels.errorStatus)
-  const messagesError = useSelector(state => state.messages.errorStatus)
+  const channelsErrorStatus = useSelector(state => state.channels?.errorStatus)
+  const messagesErrorStatus = useSelector(state => state.messages?.errorStatus)
+  const channelsErrorText = useSelector(state => state.channels?.errorText)
+  const messagesErrorText = useSelector(state => state.messages?.errorText)
 
   // загружаем исходные данные единожды
   useEffect(() => {
@@ -27,16 +31,24 @@ const Chat = () => {
 
   // следим за ошибками из слайса
   useEffect(() => {
-    if (channelsError) {
+    if (channelsErrorStatus) {
       toast.error(t('errors.channelsLoading'));
+      rollbar.error(t('errors.channelsLoading'), {
+        status: channelsErrorStatus, // отдельно передаем статус и текст ошибки так как не используется блок catch при диспатче каналов
+        message: channelsErrorText,
+      });
     }
-  }, [channelsError, t]);
+  }, [channelsErrorText, channelsErrorStatus, t, rollbar]);
 
   useEffect(() => {
-    if (messagesError) {
+    if (messagesErrorStatus) {
       toast.error(t('errors.messagesLoading'));
+      rollbar.error(t('errors.messagesLoading'), {
+        status: messagesErrorStatus, 
+        message: messagesErrorText,
+      });
     }
-  }, [messagesError, t]);
+  }, [messagesErrorText, messagesErrorStatus, t, rollbar]);
 
   // сокет подписки 
   useEffect(() => {

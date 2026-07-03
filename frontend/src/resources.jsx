@@ -25,7 +25,9 @@ export const resources =  {
         messageSend: 'Не удалось отправить сообщение',
         channelRemove: 'Не удалось удалить канал',
         channelAdd: 'Не удалось добавить канал',
-        channelRename: 'Не удалось переименовать канал'
+        channelRename: 'Не удалось переименовать канал',
+        auth: 'Ошибка авторизации',
+        registration: 'Ошибка регистрации'
       },
       loginForm: {
         registration: 'Регистрация',

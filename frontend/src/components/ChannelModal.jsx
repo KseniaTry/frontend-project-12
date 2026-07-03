@@ -9,11 +9,13 @@ import Error from "./Error";
 import { toast } from "react-toastify";
 import initLeoProfanity from "../profanity";
 import filter from 'leo-profanity'
+import { useRollbar } from '@rollbar/react';
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
   const dispatch = useDispatch()
-  const error = useSelector(state => state.channels?.error)
+  const rollbar = useRollbar()
+  const error = useSelector(state => state.channels?.errorText)
   const channels = useSelector(selectAllChannels)
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const activeChannel = useSelector((state) => {
@@ -45,8 +47,9 @@ const ChannelModal = ({ show, onHide, type}) => {
       const response = await dispatch(addChannel(newChannel)).unwrap()
       localStorage.setItem('activeChannel', response.id);
       toast.success(t('notifications.success.channelAdd'));
-    } catch {
+    } catch(err) {
       toast.error(t('errors.channelAdd'))
+      rollbar.error(t('errors.channelAdd'), err);
     }
   };
 
@@ -54,8 +57,9 @@ const ChannelModal = ({ show, onHide, type}) => {
     try {
       await dispatch(editChannel({ channelId: activeChannelId, editedChannel: newChannel })).unwrap()
       toast.success(t('notifications.success.channelRename'));
-    } catch {
+    } catch(err) {
       toast.error(t('errors.channelRename'))
+      rollbar.error(t('errors.channelRename'), err);
     }
   };
 

@@ -2,18 +2,20 @@ import { useFormik } from 'formik';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../slices/authSlice.jsx';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Header from './Header.jsx';
 import Error from './Error.jsx';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useRollbar } from '@rollbar/react';
 
 const Login = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const rollbar = useRollbar()
   const {t} = useTranslation()
-  const [error, setError] = useState('')
+  const errorText = useSelector(state => state.auth?.errorText)
+  const errorStatus =  useSelector(state => state.auth?.errorStatus)// при ошибке 401 рендерим в компоненте 
 
   const formik = useFormik({
     initialValues: {
@@ -21,7 +23,6 @@ const Login = () => {
       password: ''
     },
     onSubmit: async (values, {setSubmitting}) => {
-      setError('')
       try {
         const response = await dispatch(login(values)).unwrap()
         const token = response.token
@@ -31,15 +32,13 @@ const Login = () => {
         setSubmitting(false);
         navigate('/'); // перенаправляем на главную страницу после успешного входа
       } catch(err) {
-        console.log(err)
-        if (err?.status === 401 || err?.statusCode === 401) {
-          setError(t('errors.login')); // показываем ошибку в интерфейсе
-        } else if (err?.status === 500 || err?.status === 502) {
+        if (err?.status === 500 || err?.status === 502) {
           toast.error(t('errors.500'))
         } else {
           const msg = err?.message || err?.error || t('errors.undefined');
           toast.error(t('errors.server', {error: msg}));
         }
+        rollbar.error(t('errors.auth'), err);
         localStorage.removeItem('userToken')
         localStorage.removeItem('username')
       }
@@ -73,7 +72,7 @@ const Login = () => {
               />
             </FloatingLabel>
             <Button type="submit" variant='secondary' disabled={formik.isSubmitting}>{t('login')}</Button>
-            {error ? <Error error={error}/> : null}
+            {errorStatus === 401 ? <Error error={errorText}/> : null}
           </Form>
         </Card.Body>
         <Card.Footer>

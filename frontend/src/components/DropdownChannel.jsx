@@ -5,15 +5,15 @@ import { useDispatch } from 'react-redux';
 import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import ChannelModal from "./ChannelModal";
-// import ErrorAlert from "./ErrorAlert";
 import { toast } from 'react-toastify';
+import { useRollbar } from '@rollbar/react';
 
 const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
   const {t} = useTranslation()
+  const rollbar = useRollbar()
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false);
   const [modalShow, setModalShow] = useState(false);
-  // const [error, setError] = useState('')
 
   const handleDelete = async () => {
     try {
@@ -22,9 +22,10 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
       dispatch(setDefaultChannelId())
       localStorage.setItem('activeChannel', 1)
       toast.success(t('notifications.success.channelDelete'))
-    } catch {
+    } catch(err) {
       setIsLoading(false)
       toast.error(t('errors.removeChannel'))
+      rollbar.error(t('errors.removeChannel'), err);
     } finally {
       setIsLoading(false)
     }

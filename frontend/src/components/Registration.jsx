@@ -1,20 +1,21 @@
 import { Card, Form , FloatingLabel, Button} from "react-bootstrap"
 import { useFormik } from "formik";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import * as yup from 'yup';
 import { createNewUser } from "../slices/usersSlice";
 import Error from "./Error";
-import { useState } from "react";
 import { setAuthStatus } from "../slices/authSlice";
+import { useRollbar } from "@rollbar/react";
 
 const Registration = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const rollbar = useRollbar()
   const {t} = useTranslation()
-  const [error, setError] = useState('')
+  const error = useSelector(state => state.users?.errorText)
 
   const schema = yup.object().shape({
     username: yup.string()
@@ -50,9 +51,8 @@ const Registration = () => {
       } catch(err) {
         if (err?.status === 409) {
           setErrors({ username: t('validation.usernameCheck') }); // показываем в интерфейсе
-        } else {
-          setError(t('errors.server', {error: err.message})) // показываем в интерфейсе
         }
+        rollbar.error(t('errors.registration'), err);
       } finally {
         setSubmitting(false);
       }

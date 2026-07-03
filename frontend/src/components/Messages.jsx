@@ -7,10 +7,12 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import filter from 'leo-profanity';
 import initLeoProfanity from "../profanity";
+import { useRollbar } from "@rollbar/react";
 
 const Messages = ({isSocketConnected}) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const rollbar = useRollbar()
   const [value, setValue] = useState('')
   const [isLoading, setIsLoading] = useState(false);
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
@@ -35,9 +37,10 @@ const Messages = ({isSocketConnected}) => {
       setIsLoading(true)
       await dispatch(sendMessage(newMessage)).unwrap()
       setValue('')
-    } catch {
+    } catch(err) {
       setIsLoading(false)
       toast.error(t('errors.messageSend'))
+      rollbar.error(t('errors.messageSend'), err);
     } finally {
       setIsLoading(false)
     }
