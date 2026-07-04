@@ -24,7 +24,7 @@ const Channels = () => {
       <div className=' d-flex flex-column bg-light rounded text-dark h-100'>
         <div className='d-flex justify-content-between align-items-center mb-2'>
           <h2 className='h4'>{t('channels.title')}</h2>
-          <Button variant="primary" size="sm" onClick={() => setModalShow(true)}>+</Button>
+          <Button variant="primary" size="sm" onClick={() => setModalShow(true)}>{t('addButton')}</Button>
         </div>
         <div className='overflow-auto'>
           <ListGroup as="ul" className='bg-transparent'>

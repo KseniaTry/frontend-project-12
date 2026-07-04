@@ -6,17 +6,18 @@ export const resources =  {
       login: 'Войти',
       logout: 'Выйти',
       close: 'Закрыть',
+      addButton: '+',
       notifications: {
         success: {
-          channelAdd: 'Канал добавлен!',
+          channelAdd: 'Канал создан',
           channelRename: 'Канал переименован',
-          channelDelete: 'Канал удален'
+          channelDelete: 'Канал удалён'
         }
       },
       errors: {
         server: 'Ошибка {{error}}. Попробуйте позже или обновите страницу',
         loading: 'Идет загрузка...',
-        login: 'Неверный логин или пароль',
+        login: 'Неверные имя польователя или пароль',
         undefined: 'Неизвестная ошибка',
         404: '404 (not found)',
         500: 'Не удалось выполнить запрос',
