@@ -47,9 +47,11 @@ const ChannelModal = ({ show, onHide, type}) => {
       const response = await dispatch(addChannel(newChannel)).unwrap()
       localStorage.setItem('activeChannel', response.id);
       toast.success(t('notifications.success.channelAdd'));
+      return true // нужно для закрытия модалки и для сброса формы только в случае успешной обработки запроса
     } catch(err) {
       toast.error(t('errors.channelAdd'))
       rollbar.error(t('errors.channelAdd'), err);
+      return false 
     }
   };
 
@@ -57,9 +59,11 @@ const ChannelModal = ({ show, onHide, type}) => {
     try {
       await dispatch(editChannel({ channelId: activeChannelId, editedChannel: newChannel })).unwrap()
       toast.success(t('notifications.success.channelRename'));
+      return true
     } catch(err) {
       toast.error(t('errors.channelRename'))
       rollbar.error(t('errors.channelRename'), err);
+      return false 
     }
   };
 
@@ -74,20 +78,25 @@ const ChannelModal = ({ show, onHide, type}) => {
         name: filter.clean(values.channelName, '*', 1)
       }
 
+      let isSuccess = false
+
       switch (type) {
         case 'add':
-          handleAddChannel(newChannel)
+          isSuccess = await handleAddChannel(newChannel)
           break
         case 'rename':
-          handleRenameChannel(activeChannelId, newChannel)
+          isSuccess = await handleRenameChannel(activeChannelId, newChannel)
           break
         default: 
           console.log('type not exist')
           break
       }
   
-      formik.resetForm()
-      onHide()
+      if (isSuccess) {
+        formik.resetForm()
+        onHide()
+      }
+  
       setSubmitting(false);
     },
   });
@@ -126,8 +135,12 @@ const ChannelModal = ({ show, onHide, type}) => {
           </Form.Group>
           {error ? <Error error={error}/> : null}
           <div className="d-flex gap-2 justify-content-end">
-            <Button variant="secondary" onClick={onHide}>{t('channelModal.reset')}</Button>
-            <Button variant='primary' type='submit' disabled={formik.isSubmitting}>{t('channelModal.send')}</Button>
+            <Button variant="secondary" onClick={onHide}>
+              {t('channelModal.reset')}
+            </Button>
+            <Button variant='primary' type='submit' disabled={formik.isSubmitting}>
+              {t('channelModal.send')} 
+            </Button>
           </div>
         </Form>
       </Modal.Body>

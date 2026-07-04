@@ -14,7 +14,8 @@ const Messages = ({isSocketConnected}) => {
   const dispatch = useDispatch()
   const rollbar = useRollbar()
   const [value, setValue] = useState('')
-  const [isLoading, setIsLoading] = useState(false);
+  const loadingStatus = useSelector(state => state.auth.loadingStatus)
+  const isLoading = loadingStatus === 'loading'
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const username = useSelector(state => state.auth.currentUsername)
   const activeChannel = useSelector(state => selectChannelById(state, activeChannelId))
@@ -34,16 +35,12 @@ const Messages = ({isSocketConnected}) => {
     }
 
     try {
-      setIsLoading(true)
       await dispatch(sendMessage(newMessage)).unwrap()
       setValue('')
     } catch(err) {
-      setIsLoading(false)
       toast.error(t('errors.messageSend'))
       rollbar.error(t('errors.messageSend'), err);
-    } finally {
-      setIsLoading(false)
-    }
+    } 
 
     messagesError ? toast.error(t('errors.sendMessage')) : null
   }

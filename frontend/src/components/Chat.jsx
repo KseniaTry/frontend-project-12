@@ -15,7 +15,8 @@ import { useRollbar } from '@rollbar/react';
 const Chat = () => {
   const dispatch = useDispatch()
   const rollbar = useRollbar()
-  const {loadingStatus} = useSelector(state => state.channels)
+  const channelsLoadingStatus = useSelector(state => state.channels.loadingStatus)
+  const messagesLoadingStatus = useSelector(state => state.messages.loadingStatus)
   const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
   const {t} = useTranslation()
   const channelsErrorStatus = useSelector(state => state.channels?.errorStatus)
@@ -102,11 +103,12 @@ const Chat = () => {
       <Header />
       <Row className="flex-grow-1 m-4 bg-light border-light-subtle rounded-3 shadow" style={{ minHeight: 0 }}>
         <Col xs={4} md={4} className="p-4 border-end border-secondary-subtle h-100 d-flex flex-column" style={{ minHeight: 0 }}>
-          {loadingStatus === 'loading' && <p>{t('errors.loading')}</p>}
+          {channelsLoadingStatus === 'loading'  && <p>{t('errors.loading')}</p>}
           <Channels />
         </Col>
         <Col xs={8} md={8} className="h-100 d-flex flex-column p-0" style={{ minHeight: 0 }}>
           <Messages isConnected={isSocketConnected}/>
+          {messagesLoadingStatus === 'loading'  && <p>{t('errors.loading')}</p>}
         </Col>
       </Row>
   

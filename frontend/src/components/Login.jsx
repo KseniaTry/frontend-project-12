@@ -26,10 +26,8 @@ const Login = () => {
       try {
         const response = await dispatch(login(values)).unwrap()
         const token = response.token
-        console.log(token)
         localStorage.setItem('userToken', token)
         localStorage.setItem('username', values.username)  
-        setSubmitting(false);
         navigate('/'); // перенаправляем на главную страницу после успешного входа
       } catch(err) {
         if (err?.status === 500 || err?.status === 502) {
@@ -41,6 +39,8 @@ const Login = () => {
         rollbar.error(t('errors.auth'), err);
         localStorage.removeItem('userToken')
         localStorage.removeItem('username')
+      } finally {
+        setSubmitting(false);
       }
     },
   });

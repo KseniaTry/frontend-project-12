@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import ChannelModal from "./ChannelModal";
@@ -12,23 +12,18 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
   const {t} = useTranslation()
   const rollbar = useRollbar()
   const dispatch = useDispatch()
-  const [isLoading, setIsLoading] = useState(false);
   const [modalShow, setModalShow] = useState(false);
 
   const handleDelete = async () => {
     try {
-      setIsLoading(true)
       await dispatch(removeChannelFromServer(channel.id)).unwrap()
       dispatch(setDefaultChannelId())
       localStorage.setItem('activeChannel', 1)
       toast.success(t('notifications.success.channelDelete'))
     } catch(err) {
-      setIsLoading(false)
       toast.error(t('errors.removeChannel'))
       rollbar.error(t('errors.removeChannel'), err);
-    } finally {
-      setIsLoading(false)
-    }
+    } 
   }
 
   return (
@@ -49,7 +44,7 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
         <Dropdown.Menu className='w-100'>
           <Dropdown.Item as='button' 
             onClick={handleDelete}
-            disabled={isLoading}>
+          >
             {t('delete')}
           </Dropdown.Item>
           <Dropdown.Item as='button' 
@@ -62,7 +57,6 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
         show={modalShow} 
         onHide={() => setModalShow(false)} 
         type='rename'/>
-      {/* {error ? <ErrorAlert error={error} /> : null} */}
     </>
   )
 }
