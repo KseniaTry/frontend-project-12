@@ -3,3 +3,6 @@ start:
 
 build:
 	cd frontend && npm run build
+
+install:
+	npm install
