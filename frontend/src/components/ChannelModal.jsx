@@ -15,7 +15,8 @@ const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
   const dispatch = useDispatch()
   const rollbar = useRollbar()
-  const error = useSelector(state => state.channels?.errorText)
+  const errorText = useSelector(state => state.channels?.errorText)
+  const errorStatus = useSelector(state => state.channels?.errorStatus)
   const channels = useSelector(selectAllChannels)
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const activeChannel = useSelector((state) => {
@@ -133,7 +134,7 @@ const ChannelModal = ({ show, onHide, type}) => {
             </Form.Control.Feedback>
             <Form.Label></Form.Label>
           </Form.Group>
-          {error ? <Error error={error}/> : null}
+          {errorText ? <Error error={errorText} errorStatus={errorStatus}/> : null}
           <div className="d-flex gap-2 justify-content-end">
             <Button variant="secondary" onClick={onHide}>
               {t('channelModal.reset')}

@@ -32,11 +32,11 @@ const Login = () => {
       } catch(err) {
         if (err?.status === 500 || err?.status === 502) {
           toast.error(t('errors.500'))
-        } else {
-          const msg = err?.message || err?.error || t('errors.undefined');
-          toast.error(t('errors.server', {error: msg}));
+        } else if (err?.status !== 401) {
+          toast.error(t('errors.server', {error: err.data.error}));
+          rollbar.error(t('errors.auth'), err);
         }
-        rollbar.error(t('errors.auth'), err);
+ 
         localStorage.removeItem('userToken')
         localStorage.removeItem('username')
       } finally {
@@ -72,7 +72,7 @@ const Login = () => {
               />
             </FloatingLabel>
             <Button type="submit" variant='secondary' disabled={formik.isSubmitting}>{t('login')}</Button>
-            {errorStatus === 401 ? <Error error={errorText}/> : null}
+            {errorStatus === 401 ? <Error error={errorText} errorStatus={errorStatus}/> : null}
           </Form>
         </Card.Body>
         <Card.Footer>

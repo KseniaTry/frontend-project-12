@@ -21,6 +21,8 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: { 
     loadingStatus: false,
+    errorText: null,
+    errorStatus: null,
     isAuth: !!localStorage.getItem('userToken'), 
     token: localStorage.getItem('userToken') || '',
     currentUsername: localStorage.getItem('username') ||'' // храним в localStorage чтобы при обновлении страницы данные не удалялись
@@ -48,11 +50,13 @@ const authSlice = createSlice({
         state.currentUsername = action.payload.username
         state.loadingStatus = 'idle'
       })
-      .addCase(login.rejected, (state) => {
+      .addCase(login.rejected, (state, action) => {
         state.loadingStatus = 'failed'
         state.isAuth = false
         state.token = ''
         state.currentUsername = ''
+        state.errorStatus = action.payload ? action.payload.status : ''
+        state.errorText = action.payload ? action.payload.data.error : ''
       })
       .addCase(getChannels.rejected, (state, action) => {
         if (action.payload?.status === '401') {
