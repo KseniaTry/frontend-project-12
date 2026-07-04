@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import ChannelModal from "./ChannelModal";
