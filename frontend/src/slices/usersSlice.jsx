@@ -36,14 +36,12 @@ const usersSlice = createSlice({
       })
       .addCase(createNewUser.fulfilled, (state, action) => { //  action.payload = response.data
         usersAdapter.addOne(state, action.payload)
-        console.log(action.payload)
         state.loadingStatus = 'idle'
       })
       .addCase(createNewUser.rejected, (state, action) => {
         state.loadingStatus = 'failed'
-        state.errorText = action.payload ? action.payload.data : null
+        state.errorText = action.payload ? action.payload.data.error : null
         state.errorStatus = action.payload ? action.payload.status : null
-        // state.error = action.payload.status === 409 ? 'Пользователь уже существует' : `Ошибка сервера: ${action.payload.error}. Перезагруите страницу` 
       })
   }
 })

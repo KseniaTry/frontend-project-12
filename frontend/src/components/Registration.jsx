@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import * as yup from 'yup';
 import { createNewUser } from "../slices/usersSlice";
-import Error from "./Error";
 import { setAuthStatus } from "../slices/authSlice";
 import { useRollbar } from "@rollbar/react";
 
@@ -15,7 +14,6 @@ const Registration = () => {
   const dispatch = useDispatch()
   const rollbar = useRollbar()
   const {t} = useTranslation()
-  const error = useSelector(state => state.users?.errorText)
 
   const schema = yup.object().shape({
     username: yup.string()
@@ -51,8 +49,9 @@ const Registration = () => {
       } catch(err) {
         if (err?.status === 409) {
           setErrors({ username: t('validation.usernameCheck') }); // показываем в интерфейсе
+        } else {
+          rollbar.error(t('errors.registration'), err)
         }
-        rollbar.error(t('errors.registration'), err);
       } finally {
         setSubmitting(false);
       }
@@ -110,7 +109,6 @@ const Registration = () => {
               disabled={formik.isSubmitting}>
               {t('registration.button')}
             </Button>
-            {error ? <Error error={error}/> : null}
           </Form>
         </Card.Body>
       </Card>
