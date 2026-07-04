@@ -69,7 +69,7 @@ export const resources =  {
         required: 'Обязательное поле',
         usernameLength: 'От 3 до 20 символов',
         passwordLength: 'Не менее 6 символов',
-        usernameCheck: 'Пользователь с таким именем уже существует',
+        usernameCheck: 'Такой пользователь уже существует',
         unique: 'Должно быть уникальным',
         passwordConfirm: 'Пароли должны совпадать',
       }
