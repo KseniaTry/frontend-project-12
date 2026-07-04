@@ -34,12 +34,11 @@ const Channels = () => {
               return <ListGroup.Item 
                 className={`border-0 ${isActive ? '': 'bg-transparent'}`}
                 key={channel.id} as="li"
-                onClick={() => handleClickChannel(channel.id)} 
                 variant={isActive ? 'light' : ''} 
                 active={isActive}>
                 {channel.removable ? 
                   <DropdownChannel handleClickChannel={handleClickChannel} channel={channel} isActive={isActive}></DropdownChannel> : 
-                  <span># {channel.name}</span>}
+                  <Button className={`border-0 bg-transparent ${isActive ? 'text-light': 'text-dark'}`} onClick={() => handleClickChannel(channel.id)}># {channel.name}</Button>}
               </ListGroup.Item>
             })}
           </ListGroup>
