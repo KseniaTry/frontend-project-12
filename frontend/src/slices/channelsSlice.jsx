@@ -66,7 +66,6 @@ export const removeChannelFromServer = createAsyncThunk(
   }
 )
 
-// const editedMessage = { body: 'new body message' };
 export const editChannel = createAsyncThunk(
   'channels/editChannel',
   async({channelId, editedChannel}, thunkAPI) => {
@@ -102,7 +101,6 @@ const channelsSlice = createSlice({
       state.activeChannelId = action.payload
     },
     addNewChannel: (state, action) => {
-      console.log('Текущие каналы:', current(state.entities));
       state.activeChannelId = action.payload.id
       channelsAdapter.addOne(state, action.payload)
     },
@@ -123,7 +121,7 @@ const channelsSlice = createSlice({
       .addCase(getChannels.fulfilled, (state, action) => { //  action.payload = response.data
         if (!action.payload || !Array.isArray(action.payload)) {
           state.loadingStatus = 'failed';
-          state.error = 'Получены некорректные данные с сервера';
+          state.errorText = 'Получены некорректные данные с сервера';
           return; // Выходим из редюсера, предотвращая вызов адаптера
         }
 

@@ -7,7 +7,7 @@ const Error = ({error, errorStatus}) => {
 
   return(
     <div className="text-danger small mt-2">
-      {errorStatus === 401 ? t('errors.401') : t('error.server', {error: errorMessage})}
+      {errorStatus === 401 ? t('errors.401') : t('errors.server', {error: errorMessage})}
     </div>
   )
 }

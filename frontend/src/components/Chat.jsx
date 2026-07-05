@@ -17,7 +17,7 @@ const Chat = () => {
   const rollbar = useRollbar()
   const channelsLoadingStatus = useSelector(state => state.channels.loadingStatus)
   const messagesLoadingStatus = useSelector(state => state.messages.loadingStatus)
-  const [isSocketConnected, setSocketIsConnected] = useState(socket.connected);
+  const [isSocketConnected, setSocketIsConnected] = useState(!!socket.connected)
   const {t} = useTranslation()
   const channelsErrorStatus = useSelector(state => state.channels?.errorStatus)
   const messagesErrorStatus = useSelector(state => state.messages?.errorStatus)
@@ -103,8 +103,9 @@ const Chat = () => {
           <Channels />
         </Col>
         <Col xs={8} md={8} className="h-100 d-flex flex-column p-0" style={{ minHeight: 0 }}>
-          <Messages isConnected={isSocketConnected}/>
           {messagesLoadingStatus === 'loading'  && <p>{t('errors.loading')}</p>}
+          <Messages isConnected={isSocketConnected}/>
+          {console.log(isSocketConnected)}
         </Col>
       </Row>
   

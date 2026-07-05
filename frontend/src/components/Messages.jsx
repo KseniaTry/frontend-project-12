@@ -6,8 +6,8 @@ import { selectChannelById } from "../slices/channelsSlice";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import filter from 'leo-profanity';
-import initLeoProfanity from "../profanity";
 import { useRollbar } from "@rollbar/react";
+import Error from "./Error";
 
 const Messages = ({isSocketConnected}) => {
   const { t } = useTranslation()
@@ -22,8 +22,7 @@ const Messages = ({isSocketConnected}) => {
   const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
   const messagesCount = messagesByChannel.length
   const messagesError = useSelector(state => state.messages.error)
-
-  initLeoProfanity()
+  console.log(isSocketConnected)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +41,7 @@ const Messages = ({isSocketConnected}) => {
       rollbar.error(t('errors.messageSend'), err);
     } 
 
-    messagesError ? toast.error(t('errors.sendMessage')) : null
+    messagesError ? toast.error(t('errors.messageSend')) : null
   }
     
   return(
@@ -52,7 +51,7 @@ const Messages = ({isSocketConnected}) => {
         <p> {t('messages.messages', { count: messagesCount })}</p>
       </div>
       <div className="flex-grow-1 flex-shrink-1 p-4 bg-white w-100 overflow-auto">
-        {isSocketConnected ? <div>{t('messages.errorSocket')}</div> : null}
+        {isSocketConnected === false ? <Error error={t('errors.socket')} errorStatus={null}/> : null}
         <ListGroup as="ul">
           {messagesByChannel.map((message) => {
             return <ListGroup.Item

@@ -99,7 +99,6 @@ const messagesSlice = createSlice({
       .addCase(getMessages.fulfilled, (state, action) => { //  action.payload = response.data
         if (!action.payload || !Array.isArray(action.payload)) {
           state.loadingStatus = 'failed';
-
           state.errorText = 'Получены некорректные данные с сервера';
           return;
         }
