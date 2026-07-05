@@ -62,22 +62,18 @@ const Chat = () => {
     }
 
     function onNewMessage(payload) {
-      console.log('сокет-сообщение:', payload);
       dispatch(addMessage(payload)) // так как метод addOne сам проверяет наличие дублей по id, поэтому такая проверка не нужна
     }
 
     function onNewChannel(payload) {
-      console.log('сокет-новый канал: ', payload)
       dispatch(addNewChannel(payload))
     }
 
     function onRemoveChannel(payload) {
-      console.log('удаление канала ', payload)
       dispatch(removeChannel(payload.id))
     }
 
     function onRenameChannel(payload) {
-      console.log('переименование канала ', payload)
       dispatch(renameChannel(payload))
     }
 
