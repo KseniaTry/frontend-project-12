@@ -9,6 +9,7 @@ import { initReactI18next } from "react-i18next";
 import { resources } from './resources.jsx';
 import { rollbarConfig } from './rollbar.jsx';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
+import initLeoProfanity from "./profanity";
 
 i18n
   .use(initReactI18next) 
@@ -17,6 +18,8 @@ i18n
     lng: "ru",
     fallbackLng: "ru",
   });
+
+initLeoProfanity()
 
 createRoot(document.getElementById('root')).render(
   <ReduxProvider store={store}>
