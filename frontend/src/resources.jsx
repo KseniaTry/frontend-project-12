@@ -15,7 +15,7 @@ export const resources =  {
         }
       },
       errors: {
-        server: 'Ошибка {{error}}. Попробуйте позже или обновите страницу',
+        server: 'Ошибка "{{error}}". Попробуйте позже или обновите страницу',
         loading: 'Идет загрузка...',
         401: 'Неверные имя пользователя или пароль',
         404: '404 (not found)',
@@ -27,7 +27,8 @@ export const resources =  {
         channelAdd: 'Не удалось добавить канал',
         channelRename: 'Не удалось переименовать канал',
         auth: 'Ошибка авторизации',
-        registration: 'Ошибка регистрации'
+        registration: 'Ошибка регистрации',
+        socket: 'Ошибка загрузки Socket',
       },
       loginForm: {
         registration: 'Регистрация',
@@ -48,7 +49,6 @@ export const resources =  {
         messages_many: '{{count}} сообщений',
         send: 'Отправить',
         placeholder: 'Введите сообщение...',
-        socketError: 'Ошибка загрузки Socket',
       },
       channels: {
         title: 'Каналы'
