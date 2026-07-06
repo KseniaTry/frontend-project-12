@@ -15,6 +15,7 @@ const Messages = ({isSocketConnected}) => {
   const rollbar = useRollbar()
   const [value, setValue] = useState('')
   const sendingLoadingStatus = useSelector(state => state.messages.sendingLoadingStatus)
+  const gettingLoadingStatus = useSelector(state => state.messages.gettingLoadingStatus)
   const isLoading = sendingLoadingStatus === 'loading'
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const username = useSelector(state => state.auth.currentUsername)
@@ -51,6 +52,7 @@ const Messages = ({isSocketConnected}) => {
       </div>
       <div className="flex-grow-1 flex-shrink-1 p-4 bg-white w-100 overflow-auto">
         {isSocketConnected === false ? <Error error={t('errors.socket')} errorStatus={null}/> : null}
+        {gettingLoadingStatus === 'loading'  && <p>{t('errors.loading')}</p>}
         <ListGroup as="ul">
           {messagesByChannel.map((message) => {
             return <ListGroup.Item

@@ -9,6 +9,3 @@ lint:
 
 lint-fix:
 	npm run lint:fix
-
-install:
-	npm install

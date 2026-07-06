@@ -11,6 +11,7 @@ const Channels = () => {
   const {t} = useTranslation()
   const dispatch = useDispatch()
   const channels = useSelector(selectAllChannels)
+  const channelsLoadingStatus = useSelector(state => state.channels.loadingStatus)
   const [modalShow, setModalShow] = useState(false);
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
 
@@ -27,6 +28,7 @@ const Channels = () => {
           <Button variant="primary" size="sm" onClick={() => setModalShow(true)}>{t('addButton')}</Button>
         </div>
         <div className='overflow-auto'>
+          {channelsLoadingStatus === 'loading'  && <p>{t('errors.loading')}</p>}
           <ListGroup as="ul" className='bg-transparent'>
             {channels.map((channel) => {
               const isActive = activeChannelId === channel.id
