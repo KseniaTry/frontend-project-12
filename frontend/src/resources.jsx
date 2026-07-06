@@ -48,7 +48,7 @@ export const resources =  {
         messages_few: '{{count}} сообщения',
         messages_many: '{{count}} сообщений',
         send: 'Отправить',
-        placeholder: 'Введите сообщение...',
+        placeholder: 'Новое сообщение',
       },
       channels: {
         title: 'Каналы'
