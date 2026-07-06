@@ -119,11 +119,11 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(getChannels.fulfilled, (state, action) => { //  action.payload = response.data
-        if (!action.payload || !Array.isArray(action.payload)) {
-          state.loadingStatus = 'failed';
-          state.errorText = 'Получены некорректные данные с сервера';
-          return; // Выходим из редюсера, предотвращая вызов адаптера
-        }
+        // if (!action.payload || !Array.isArray(action.payload)) {
+        //   state.loadingStatus = 'failed';
+        //   state.errorText = 'Получены некорректные данные с сервера';
+        //   return; // Выходим из редюсера, предотвращая вызов адаптера
+        // }
 
         channelsAdapter.setAll(state, action.payload)
         channelsSlice.caseReducers.setDefaultChannelId(state) // вызываем обычный редьюсер внутри extra reducer 

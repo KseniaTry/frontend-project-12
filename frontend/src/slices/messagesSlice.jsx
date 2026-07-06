@@ -97,11 +97,6 @@ const messagesSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(getMessages.fulfilled, (state, action) => { //  action.payload = response.data
-        if (!action.payload || !Array.isArray(action.payload)) {
-          state.loadingStatus = 'failed';
-          state.errorText = 'Получены некорректные данные с сервера';
-          return;
-        }
         messagesAdapter.setAll(state, action.payload)
         state.loadingStatus = 'idle'
       })
@@ -115,11 +110,6 @@ const messagesSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(sendMessage.fulfilled, (state, action) => { 
-        if (!action.payload || !Array.isArray(action.payload)) {
-          state.loadingStatus = 'failed';
-          state.errorText = 'Ошибка сервера';
-          return;
-        }
         messagesAdapter.addOne(state, action.payload)
         state.loadingStatus = 'idle'
       })
