@@ -19,7 +19,6 @@ export const createNewUser = createAsyncThunk(
 const usersSlice = createSlice({
   name: 'users',
   initialState: usersAdapter.getInitialState({
-    loadingStatus: false,
     errorText: null,
     errorStatus: null
   }),
@@ -31,15 +30,10 @@ const usersSlice = createSlice({
   extraReducers: (builder) => {
     builder
     // получение всех каналов
-      .addCase(createNewUser.pending, (state) => {
-        state.loadingStatus = 'loading'
-      })
       .addCase(createNewUser.fulfilled, (state, action) => { //  action.payload = response.data
         usersAdapter.addOne(state, action.payload)
-        state.loadingStatus = 'idle'
       })
       .addCase(createNewUser.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data.error : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
