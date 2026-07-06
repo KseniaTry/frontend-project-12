@@ -14,8 +14,8 @@ const Messages = ({isSocketConnected}) => {
   const dispatch = useDispatch()
   const rollbar = useRollbar()
   const [value, setValue] = useState('')
-  const loadingStatus = useSelector(state => state.auth.loadingStatus)
-  const isLoading = loadingStatus === 'loading'
+  const sendingLoadingStatus = useSelector(state => state.messages.sendingLoadingStatus)
+  const isLoading = sendingLoadingStatus === 'loading'
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const username = useSelector(state => state.auth.currentUsername)
   const activeChannel = useSelector(state => selectChannelById(state, activeChannelId))

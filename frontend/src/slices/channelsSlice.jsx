@@ -1,4 +1,4 @@
-import { createSlice, createEntityAdapter, createAsyncThunk , current} from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 const channelsAdapter = createEntityAdapter()

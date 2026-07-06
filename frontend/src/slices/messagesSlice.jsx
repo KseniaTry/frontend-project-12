@@ -81,7 +81,8 @@ export const deleteMessage = createAsyncThunk(
 const messagesSlice = createSlice({
   name: 'messages',
   initialState: messagesAdapter.getInitialState({
-    loadingStatus: false,
+    sendingLoadingStatus: false,
+    gettingLoadingStatus: false,
     errorText: null,
     errorStatus: null
   }),
@@ -94,40 +95,40 @@ const messagesSlice = createSlice({
     builder
     // загрузка всех сообщений при инициализации мессенджера
       .addCase(getMessages.pending, (state) => {
-        state.loadingStatus = 'loading'
+        state.gettingLoadingStatus = 'loading'
       })
       .addCase(getMessages.fulfilled, (state, action) => { //  action.payload = response.data
         messagesAdapter.setAll(state, action.payload)
-        state.loadingStatus = 'idle'
+        state.gettingLoadingStatus = 'idle'
       })
       .addCase(getMessages.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
+        state.gettingLoadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
       // отправка сообщения
       .addCase(sendMessage.pending, (state) => {
-        state.loadingStatus = 'loading'
+        state.sendingLoadingStatus = 'loading'
       })
       .addCase(sendMessage.fulfilled, (state, action) => { 
         messagesAdapter.addOne(state, action.payload)
-        state.loadingStatus = 'idle'
+        state.sendingLoadingStatus = 'idle'
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
+        state.sendingLoadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
       // удаление сообщения
       .addCase(deleteMessage.pending, (state) => {
-        state.loadingStatus = 'loading'
+        // state.loadingStatus = 'loading'
       })
       .addCase(deleteMessage.fulfilled, (state, action) => { 
         messagesAdapter.removeOne(state, action.payload)
-        state.loadingStatus = 'idle'
+        // state.loadingStatus = 'idle'
       })
       .addCase(deleteMessage.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
+        // state.loadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
