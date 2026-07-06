@@ -119,12 +119,6 @@ const channelsSlice = createSlice({
         state.loadingStatus = 'loading'
       })
       .addCase(getChannels.fulfilled, (state, action) => { //  action.payload = response.data
-        // if (!action.payload || !Array.isArray(action.payload)) {
-        //   state.loadingStatus = 'failed';
-        //   state.errorText = 'Получены некорректные данные с сервера';
-        //   return; // Выходим из редюсера, предотвращая вызов адаптера
-        // }
-
         channelsAdapter.setAll(state, action.payload)
         channelsSlice.caseReducers.setDefaultChannelId(state) // вызываем обычный редьюсер внутри extra reducer 
         state.loadingStatus = 'idle'
@@ -136,43 +130,28 @@ const channelsSlice = createSlice({
         state.errorStatus = action.payload ? action.payload.status : null
       })
     // добавление канала
-      .addCase(addChannel.pending, (state) => {
-        state.loadingStatus = 'loading'
-      })
       .addCase(addChannel.fulfilled, (state, action) => {
         channelsAdapter.addOne(state, action.payload)
         state.activeChannelId = action.payload.id
-        state.loadingStatus = 'idle'
       })
       .addCase(addChannel.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
       // удаление канала
-      .addCase(removeChannelFromServer.pending, (state) => {
-        state.loadingStatus = 'loading'
-      })
       .addCase(removeChannelFromServer.fulfilled, (state, action) => {
         channelsAdapter.removeOne(state, action.payload)
-        state.loadingStatus = 'idle'
       })
       .addCase(removeChannelFromServer.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
     // переименование канала
-      .addCase(editChannel.pending, (state) => {
-        state.loadingStatus = 'loading'
-      })
       .addCase(editChannel.fulfilled, (state, action) => {
         const id = action.payload.id
         channelsAdapter.updateOne(state, {id, changes: {name: action.payload.name}})
-        state.loadingStatus = 'idle'
       })
       .addCase(editChannel.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })

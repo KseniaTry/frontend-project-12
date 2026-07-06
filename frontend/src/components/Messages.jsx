@@ -22,7 +22,6 @@ const Messages = ({isSocketConnected}) => {
   const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
   const messagesCount = messagesByChannel.length
   const messagesError = useSelector(state => state.messages.error)
-  console.log(isSocketConnected)
 
   const handleSubmit = async (e) => {
     e.preventDefault();

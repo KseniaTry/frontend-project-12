@@ -105,7 +105,6 @@ const Chat = () => {
         <Col xs={8} md={8} className="h-100 d-flex flex-column p-0" style={{ minHeight: 0 }}>
           {messagesLoadingStatus === 'loading'  && <p>{t('errors.loading')}</p>}
           <Messages isConnected={isSocketConnected}/>
-          {console.log(isSocketConnected)}
         </Col>
       </Row>
   

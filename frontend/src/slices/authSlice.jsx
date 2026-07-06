@@ -20,7 +20,6 @@ export const login = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: { 
-    loadingStatus: false,
     errorText: null,
     errorStatus: null,
     isAuth: !!localStorage.getItem('userToken'), 
@@ -41,17 +40,12 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     // получение всех каналов
     builder
-      .addCase(login.pending, (state) => {
-        state.loadingStatus = 'loading'
-      })
       .addCase(login.fulfilled, (state, action) => { //  action.payload = response.data
         state.isAuth = true
         state.token = action.payload.token
         state.currentUsername = action.payload.username
-        state.loadingStatus = 'idle'
       })
       .addCase(login.rejected, (state, action) => {
-        state.loadingStatus = 'failed'
         state.isAuth = false
         state.token = ''
         state.currentUsername = ''
