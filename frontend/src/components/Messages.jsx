@@ -22,7 +22,7 @@ const Messages = ({isSocketConnected}) => {
   const activeChannel = useSelector(state => selectChannelById(state, activeChannelId))
   const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
   const messagesCount = messagesByChannel.length
-  const messagesError = useSelector(state => state.messages.error)
+  const messagesError = useSelector(state => state.messages?.errorText)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,9 +33,11 @@ const Messages = ({isSocketConnected}) => {
       username: username
     }
 
+    setValue('')
+
     try {
       await dispatch(sendMessage(newMessage)).unwrap()
-      setValue('')
+
     } catch(err) {
       toast.error(t('errors.messageSend'))
       rollbar.error(t('errors.messageSend'), err);
