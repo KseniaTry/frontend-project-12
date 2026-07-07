@@ -51,6 +51,8 @@ const Chat = () => {
 
   // сокет подписки 
   useEffect(() => {
+    socket.connect()
+        
     function onConnect() {
       setSocketIsConnected(true);
     }

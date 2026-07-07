@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../slices/authSlice.jsx';
+import { login, setCurrentUsername, setToken } from '../slices/authSlice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Header from './Header.jsx';
@@ -26,6 +26,8 @@ const Login = () => {
       try {
         const response = await dispatch(login(values)).unwrap()
         const token = response.token
+        dispatch(setToken(token))
+        dispatch(setCurrentUsername(values.username))
         localStorage.setItem('userToken', token)
         localStorage.setItem('username', values.username)  
         navigate('/'); // перенаправляем на главную страницу после успешного входа
@@ -37,6 +39,8 @@ const Login = () => {
           rollbar.error(t('errors.auth'), err);
         }
  
+        dispatch(setToken(''))
+        dispatch(setCurrentUsername(''))
         localStorage.removeItem('userToken')
         localStorage.removeItem('username')
       } finally {

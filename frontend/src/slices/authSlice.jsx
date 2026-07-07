@@ -17,13 +17,19 @@ export const login = createAsyncThunk(
 
 // берем токен из localStorage, так как при обновлении страницы нам нужно пocмтреть, 
 // авторизован ли пользователь и в зависимости от этого рендерить initialState
+
+const rawToken = localStorage.getItem('userToken');
+const rawUsername = localStorage.getItem('username');
+
+const hasValidToken = !!rawToken && rawToken !== 'null' && rawToken !== 'undefined';
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: { 
     errorText: null,
     errorStatus: null,
-    isAuth: !!localStorage.getItem('userToken'), 
-    token: localStorage.getItem('userToken') || '',
+    isAuth: hasValidToken, 
+    token: hasValidToken ? rawToken : '',
     currentUsername: localStorage.getItem('username') ||'' // храним в localStorage чтобы при обновлении страницы данные не удалялись
   },
   reducers: {
@@ -34,8 +40,15 @@ const authSlice = createSlice({
       state.token = action.payload
     },
     setCurrentUsername: (state, action) => {
-      state.username = action.payload
-    }
+      state.currentUsername = action.payload
+    },
+    resetAuth: (state) => {
+      state.isAuth = false;
+      state.token = '';
+      state.currentUsername = '';
+      state.errorText = null;
+      state.errorStatus = null;
+    },
   },
   extraReducers: (builder) => {
     // получение всех каналов
@@ -67,5 +80,5 @@ const authSlice = createSlice({
   }
 })
 
-export const { setAuthStatus, setToken, setCurrentUsername } = authSlice.actions
+export const { setAuthStatus, setToken, setCurrentUsername , resetAuth} = authSlice.actions
 export default authSlice.reducer

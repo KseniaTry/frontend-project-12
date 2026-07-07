@@ -2,7 +2,7 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
-import { addChannel, selectAllChannels, editChannel, selectChannelById } from "../slices/channelsSlice";
+import { addChannel, selectAllChannels, editChannel, selectChannelById, setActiveChannelId } from "../slices/channelsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import * as yup from 'yup';
 import Error from "./Error";
@@ -47,6 +47,7 @@ const ChannelModal = ({ show, onHide, type}) => {
     try {
       const response = await dispatch(addChannel(newChannel)).unwrap()
       localStorage.setItem('activeChannel', response.id);
+      dispatch(setActiveChannelId(response.id))
       toast.success(t('notifications.success.channelAdd'));
       return true // нужно для закрытия модалки и для сброса формы только в случае успешной обработки запроса
     } catch(err) {

@@ -2,7 +2,7 @@ import { Button, Navbar, Container } from "react-bootstrap"
 import { useTranslation } from "react-i18next"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { setAuthStatus, setCurrentUsername, setToken } from "../slices/authSlice"
+import { resetAuth } from "../slices/authSlice"
 
 const Header = () => {
   const {t} = useTranslation()
@@ -11,9 +11,7 @@ const Header = () => {
   const isAuth = useSelector(state => state.auth.isAuth)
 
   const handleClick = () => {
-    dispatch(setAuthStatus(false))
-    dispatch(setCurrentUsername(''))
-    dispatch(setToken(''))
+    dispatch(resetAuth())
     localStorage.removeItem('userToken')
     localStorage.removeItem('username')
     navigate('/login')

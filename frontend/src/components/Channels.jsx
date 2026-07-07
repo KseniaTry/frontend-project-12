@@ -18,6 +18,7 @@ const Channels = () => {
   const handleClickChannel = (channelId) => {
     dispatch(setActiveChannelId(channelId))
     localStorage.setItem('activeChannel', channelId)
+    dispatch(setActiveChannelId(channelId))
   }
 
   return(

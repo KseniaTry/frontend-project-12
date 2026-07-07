@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import Header from "./Header";
 import * as yup from 'yup';
 import { createNewUser } from "../slices/usersSlice";
-import { setAuthStatus } from "../slices/authSlice";
+import { setAuthStatus, setCurrentUsername, setToken } from "../slices/authSlice";
 import { useRollbar } from "@rollbar/react";
 
 const Registration = () => {
@@ -44,6 +44,8 @@ const Registration = () => {
         const response =  await dispatch(createNewUser(newUser)).unwrap()
         localStorage.setItem('userToken', response.token)
         localStorage.setItem('username', response.username)
+        dispatch(setToken(response.token))
+        dispatch(setCurrentUsername(response.username))
         dispatch(setAuthStatus(true))
         navigate('/') 
       } catch(err) {
