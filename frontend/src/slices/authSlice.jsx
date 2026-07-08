@@ -17,9 +17,7 @@ export const login = createAsyncThunk(
 
 // берем токен из localStorage, так как при обновлении страницы нам нужно пocмтреть, 
 // авторизован ли пользователь и в зависимости от этого рендерить initialState
-
 const rawToken = localStorage.getItem('userToken');
-const rawUsername = localStorage.getItem('username');
 
 const hasValidToken = !!rawToken && rawToken !== 'null' && rawToken !== 'undefined';
 
