@@ -31,8 +31,8 @@ const ChannelModal = ({ show, onHide, type}) => {
 
   const schema = yup.object().shape({
     channelName: yup.string()
-      .min(3, t('validation.nameLength'))
-      .max(20, t('validation.nameLength'))
+      .min(3, t('validation.length'))
+      .max(20, t('validation.length'))
       .test(
         '',
         t('validation.unique'),
@@ -40,7 +40,6 @@ const ChannelModal = ({ show, onHide, type}) => {
           return channels.every((channel) => channel.name !== value)
         }
       )
-      .required(t('validation.required'))
   })
 
   const handleAddChannel = async (newChannel) => {
@@ -77,7 +76,7 @@ const ChannelModal = ({ show, onHide, type}) => {
     enableReinitialize: true, // нужно для того чтобы при переименовании отобразилось имя текущего канала (тк данные приходят не сразу)
     onSubmit: async (values, {setSubmitting}) => {     
       const newChannel = {
-        name: filter.clean(values.channelName, '*', 1)
+        name: filter.clean(values.channelName)
       }
 
       let isSuccess = false
@@ -98,7 +97,7 @@ const ChannelModal = ({ show, onHide, type}) => {
         formik.resetForm()
         onHide()
       }
-  
+
       setSubmitting(false);
     },
   });
@@ -117,30 +116,39 @@ const ChannelModal = ({ show, onHide, type}) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={(e) => {
-          e.preventDefault()
-          formik.handleSubmit(e)
-        }}>
-          <Form.Group controlId="channelName">
+        <Form onSubmit={ formik.handleSubmit}>
+          <Form.Group controlId="channelName" className="mb-4">
+            <Form.Label className="mb-3">
+              { t('channelModal.label')}
+            </Form.Label>
             <Form.Control 
               type='text' 
               onChange={formik.handleChange}
               value={formik.values.channelName}
-              isInvalid={formik.touched.channelName && formik.errors.channelName}
+              isInvalid={!!formik.errors.channelName}
               onBlur={formik.handleBlur}
               required
+              autoFocus
             />
-            <Form.Control.Feedback type="invalid">
+
+            <div className="invalid-feedback d-block" style={{ minHeight: '21px' }}>
+              {formik.errors.channelName || ''}
+            </div>
+  
+            {/* <Form.Control.Feedback type="invalid">
               {formik.errors.channelName}
-            </Form.Control.Feedback>
-            <Form.Label></Form.Label>
+            </Form.Control.Feedback> */}
           </Form.Group>
           {errorText ? <Error error={errorText} errorStatus={errorStatus}/> : null}
           <div className="d-flex gap-2 justify-content-end">
             <Button variant="secondary" onClick={onHide}>
               {t('channelModal.reset')}
             </Button>
-            <Button variant='primary' type='submit' disabled={formik.isSubmitting}>
+            <Button 
+              variant='primary' 
+              type='submit' 
+              disabled={formik.isSubmitting}
+            >
               {t('channelModal.send')} 
             </Button>
           </div>

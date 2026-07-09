@@ -59,14 +59,15 @@ export const resources =  {
         logOutButton: 'Выйти'
       },
       channelModal: {
-        addTitle: 'Добавить канал',
-        renameTitle: 'Переименовать канал',
+        label: 'Имя канала',
+        addTitle: 'Добавление канала',
+        renameTitle: 'Управление каналом',
         reset: 'Отменить',
         send: 'Отправить'
       },
       validation: {
         required: 'Обязательное поле',
-        usernameLength: 'От 3 до 20 символов',
+        length: 'От 3 до 20 символов',
         passwordLength: 'Не менее 6 символов',
         usernameCheck: 'Такой пользователь уже существует',
         unique: 'Должно быть уникальным',

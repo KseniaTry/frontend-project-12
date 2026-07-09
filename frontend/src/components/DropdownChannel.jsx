@@ -39,17 +39,18 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
           variant='secondary'
           id="dropdown-channel" 
           className={`bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
+          <span className="visually-hidden">Управление каналом</span>
         </Dropdown.Toggle>
 
         <Dropdown.Menu className='w-100'>
           <Dropdown.Item as='button' 
+            onClick={() => setModalShow(true)}>
+            {t('rename')}
+          </Dropdown.Item>
+          <Dropdown.Item as='button' 
             onClick={handleDelete}
           >
             {t('delete')}
-          </Dropdown.Item>
-          <Dropdown.Item as='button' 
-            onClick={() => setModalShow(true)}>
-            {t('rename')}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

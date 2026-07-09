@@ -17,8 +17,8 @@ const Registration = () => {
 
   const schema = yup.object().shape({
     username: yup.string()
-      .min(3, t('validation.usernameLength'))
-      .max(20, t('validation.usernameLength'))
+      .min(3, t('validation.length'))
+      .max(20, t('validation.length'))
       .required(t('validation.required')),
     password: yup.string()
       .min(6, t('validation.passwordLength'))

@@ -77,11 +77,7 @@ const Messages = ({isSocketConnected}) => {
               value={value} 
               onChange={ e => setValue(e.target.value)} 
               placeholder={t('messages.placeholder')} 
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSubmit(e);
-                }
-              }}
+              aria-label={t('messages.placeholder')}
               required
             />
             <Form.Label ></Form.Label>
