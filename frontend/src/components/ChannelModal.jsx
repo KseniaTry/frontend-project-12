@@ -134,10 +134,7 @@ const ChannelModal = ({ show, onHide, type}) => {
             <div className="invalid-feedback d-block" style={{ minHeight: '21px' }}>
               {formik.errors.channelName || ''}
             </div>
-  
-            {/* <Form.Control.Feedback type="invalid">
-              {formik.errors.channelName}
-            </Form.Control.Feedback> */}
+
           </Form.Group>
           {errorText ? <Error error={errorText} errorStatus={errorStatus}/> : null}
           <div className="d-flex gap-2 justify-content-end">

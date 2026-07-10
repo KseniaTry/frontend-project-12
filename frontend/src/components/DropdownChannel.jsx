@@ -1,30 +1,14 @@
 
 import { useState } from "react";
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { setDefaultChannelId, removeChannelFromServer } from '../slices/channelsSlice';
 import { useTranslation } from 'react-i18next';
 import ChannelModal from "./ChannelModal";
-import { toast } from 'react-toastify';
-import { useRollbar } from '@rollbar/react';
+import DeleteModal from "./DeleteModal";
 
 const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
   const {t} = useTranslation()
-  const rollbar = useRollbar()
-  const dispatch = useDispatch()
-  const [modalShow, setModalShow] = useState(false);
-
-  const handleDelete = async () => {
-    try {
-      await dispatch(removeChannelFromServer(channel.id)).unwrap()
-      dispatch(setDefaultChannelId())
-      localStorage.setItem('activeChannel', 1)
-      toast.success(t('notifications.success.channelDelete'))
-    } catch(err) {
-      toast.error(t('errors.removeChannel'))
-      rollbar.error(t('errors.removeChannel'), err);
-    } 
-  }
+  const [renameModalShow, setRenameModalShow] = useState(false);
+  const [deleteModalShow, setDeleteModalShow] = useState(false);
 
   return (
     <>
@@ -39,26 +23,30 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
           variant='secondary'
           id="dropdown-channel" 
           className={`bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
-          <span className="visually-hidden">Управление каналом</span>
+          <span className="visually-hidden">{t('channelModal.renameName')}</span>
         </Dropdown.Toggle>
 
         <Dropdown.Menu className='w-100'>
           <Dropdown.Item as='button' 
-            onClick={() => setModalShow(true)}>
+            onClick={() => setRenameModalShow(true)}>
             {t('rename')}
           </Dropdown.Item>
           <Dropdown.Item as='button' 
-            onClick={handleDelete}
-          >
+            onClick={() => setDeleteModalShow(true)}>
             {t('delete')}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       <ChannelModal 
-        show={modalShow} 
-        onHide={() => setModalShow(false)} 
+        show={renameModalShow} 
+        onHide={() => setRenameModalShow(false)} 
         type='rename'/>
+      <DeleteModal 
+        show={deleteModalShow} 
+        onHide={() => setDeleteModalShow(false)} 
+        channel={channel}/>
     </>
+
   )
 }
 
