@@ -73,7 +73,7 @@ const Messages = ({isSocketConnected}) => {
               <b>{message.username}: </b>{message.body}
             </ListGroup.Item>
           })}
-          <ListGroup.Item ref={messagesEndRef}></ListGroup.Item>
+          <ListGroup.Item  className='border-0' ref={messagesEndRef}></ListGroup.Item>
         </ListGroup>
    
       </div>
