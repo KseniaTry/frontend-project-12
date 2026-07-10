@@ -23,7 +23,7 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
           variant='secondary'
           id="dropdown-channel" 
           className={`bg-transparent p-0 border-0 shadow-none ${isActive ? 'text-white' : 'text-dark'}`}>
-          <span className="visually-hidden">{t('channelModal.renameName')}</span>
+          <span className="visually-hidden">{t('channelModal.title')}</span>
         </Dropdown.Toggle>
 
         <Dropdown.Menu className='w-100'>

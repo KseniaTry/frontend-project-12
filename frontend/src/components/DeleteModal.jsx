@@ -29,16 +29,16 @@ const DeleteModal = ({ show, onHide, channel}) => {
       show={show}
       onHide={onHide}
       size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
+      aria-labelledby="deleteModal"
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          {t('deleteModal.title')}
+        <Modal.Title id="deleteModal">
+          {t('channelModal.title')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {t('deleteModal.text', {channelName: channel.name})}
+        {t('channelModal.delete', {channelName: channel.name})}
         <div className="d-flex gap-2 justify-content-end">
           <Button variant="secondary" onClick={handleDelete}>
             {t('delete')}

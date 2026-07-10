@@ -61,14 +61,10 @@ export const resources =  {
       channelModal: {
         label: 'Имя канала',
         addTitle: 'Добавление канала',
-        renameTitle: 'Управление каналом',
+        title: 'Управление каналом',
         reset: 'Отменить',
         send: 'Отправить',
-        
-      },
-      deleteModal: {
-        title: 'Удаление канала',
-        text: 'Действительно ли Вы хотите удалить канал "{{channelName}}"?'
+        delete:  'Действительно ли Вы хотите удалить канал "{{channelName}}"?'
       },
       validation: {
         required: 'Обязательное поле',

@@ -107,12 +107,12 @@ const ChannelModal = ({ show, onHide, type}) => {
       show={show}
       onHide={onHide}
       size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
+      aria-labelledby="channelModal"
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          {type === 'add' ? t('channelModal.addTitle') : t('channelModal.renameTitle')}
+        <Modal.Title id="channelModal">
+          {type === 'add' ? t('channelModal.addTitle') : t('channelModal.title')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
