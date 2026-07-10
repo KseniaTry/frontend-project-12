@@ -1,5 +1,5 @@
 import { Button, Form, ListGroup } from "react-bootstrap"
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { sendMessage, selectMessagesByChannel } from "../slices/messagesSlice";
 import { selectChannelById } from "../slices/channelsSlice";
@@ -23,6 +23,16 @@ const Messages = ({isSocketConnected}) => {
   const messagesByChannel = useSelector(selectMessagesByChannel(activeChannelId))
   const messagesCount = messagesByChannel.length
   const messagesError = useSelector(state => state.messages?.errorText)
+  const messagesEndRef = useRef(null)
+
+  // для автоскролла к последнему сообщению
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messagesByChannel]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +47,6 @@ const Messages = ({isSocketConnected}) => {
 
     try {
       await dispatch(sendMessage(newMessage)).unwrap()
-
     } catch(err) {
       toast.error(t('errors.messageSend'))
       rollbar.error(t('errors.messageSend'), err);
@@ -64,7 +73,7 @@ const Messages = ({isSocketConnected}) => {
               <b>{message.username}: </b>{message.body}
             </ListGroup.Item>
           })}
-
+          <ListGroup.Item ref={messagesEndRef}></ListGroup.Item>
         </ListGroup>
    
       </div>
