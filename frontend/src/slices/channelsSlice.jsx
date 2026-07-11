@@ -1,5 +1,6 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { getChannelsRoute, getChannelsRouteById } from '../routes'
 
 const channelsAdapter = createEntityAdapter()
 
@@ -8,7 +9,8 @@ export const getChannels = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.get('/api/v1/channels', {
+      const channelsRoute = getChannelsRoute()
+      const response = await axios.get(channelsRoute, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -36,7 +38,8 @@ export const addChannel = createAsyncThunk(
   async(newChannel, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.post('/api/v1/channels', newChannel, {
+      const channelsRoute = getChannelsRoute()
+      const response = await axios.post(channelsRoute, newChannel, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -54,7 +57,8 @@ export const removeChannelFromServer = createAsyncThunk(
   async(channelId, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.delete(`/api/v1/channels/${channelId}`, {
+      const channelsRouteById = getChannelsRouteById(channelId)
+      const response = await axios.delete(channelsRouteById, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -71,7 +75,8 @@ export const editChannel = createAsyncThunk(
   async({channelId, editedChannel}, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.patch(`/api/v1/channels/${channelId}`, editedChannel, {
+      const channelsRouteById = getChannelsRouteById(channelId)
+      const response = await axios.patch(channelsRouteById, editedChannel, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },

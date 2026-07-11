@@ -3,12 +3,14 @@ import { getChannels } from './channelsSlice'
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { createNewUser } from './usersSlice';
+import { getLoginRoute } from '../routes';
 
 export const login = createAsyncThunk(
   'auth/login', 
   async (values, thunkAPI) => {
     try {
-      const response = await axios.post('/api/v1/login', values)
+      const loginRoute = getLoginRoute()
+      const response = await axios.post(loginRoute, values)
       return response.data
     } catch(err) {
       return thunkAPI.rejectWithValue({ status: err.response?.status, data: err.response?.data }) 

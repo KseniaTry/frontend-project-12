@@ -1,5 +1,6 @@
 import { createSlice, createEntityAdapter, createAsyncThunk} from '@reduxjs/toolkit'
 import axios from 'axios'
+import { getSignUpRoute } from '../routes'
 
 const usersAdapter = createEntityAdapter()
 
@@ -7,8 +8,9 @@ export const createNewUser = createAsyncThunk(
   'users/createNewUser', 
   async ({username, password}, thunkAPI) => {
     try {
+      const signUpRoute = getSignUpRoute()
       const response = await axios.post(
-        '/api/v1/signup', 
+        signUpRoute, 
         { username,  password })
       return response.data  // => { token: ..., username: 'newuser' }
     } catch(err) {

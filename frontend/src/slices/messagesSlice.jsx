@@ -2,6 +2,7 @@ import { createSlice, createEntityAdapter, createAsyncThunk} from '@reduxjs/tool
 import axios from 'axios'
 import { createSelector } from '@reduxjs/toolkit'
 import { removeChannel } from './channelsSlice'
+import { getMessagesRoute, getMessagesRouteById } from '../routes'
 
 const messagesAdapter = createEntityAdapter()
 
@@ -14,7 +15,8 @@ export const getMessages = createAsyncThunk(
     try {
       // throw { response: { status: 500, data: 'Ошибка базы данных' } };
       const state = thunkAPI.getState()
-      const response = await axios.get('/api/v1/messages', {
+      const messagesRoute = getMessagesRoute()
+      const response = await axios.get(messagesRoute, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -42,7 +44,8 @@ export const sendMessage = createAsyncThunk(
   async(newMessage, thunkAPI) => {
     try {
       const state = thunkAPI.getState()
-      const response = await axios.post('/api/v1/messages', newMessage, {
+      const messagesRoute = getMessagesRoute()
+      const response = await axios.post(messagesRoute, newMessage, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
@@ -63,7 +66,8 @@ export const deleteMessage = createAsyncThunk(
   async(messageId, thunkAPI) => {   
     try {
       const state = thunkAPI.getState()
-      const response = await axios.delete(`/api/v1/messages/${messageId}`, {
+      const messagesRouteById = getMessagesRouteById(messageId)
+      const response = await axios.delete(messagesRouteById, {
         headers: {
           Authorization: `Bearer ${state.auth.token}`,
         },
