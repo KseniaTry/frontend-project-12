@@ -124,15 +124,10 @@ const messagesSlice = createSlice({
         state.errorStatus = action.payload ? action.payload.status : null
       })
       // удаление сообщения
-      .addCase(deleteMessage.pending, (state) => {
-        // state.loadingStatus = 'loading'
-      })
       .addCase(deleteMessage.fulfilled, (state, action) => { 
         messagesAdapter.removeOne(state, action.payload)
-        // state.loadingStatus = 'idle'
       })
       .addCase(deleteMessage.rejected, (state, action) => {
-        // state.loadingStatus = 'failed'
         state.errorText = action.payload ? action.payload.data : null
         state.errorStatus = action.payload ? action.payload.status : null
       })
@@ -149,7 +144,7 @@ const messagesSlice = createSlice({
 const baseSelectors = messagesAdapter.getSelectors((state) => state.messages);
 
 export const {
-  selectAll: selectAllMessages,      // Возвращает МАССИВ всех сообщений (уже готовый для .map)
+  selectAll: selectAllMessages,     // Возвращает МАССИВ всех сообщений (уже готовый для .map)
   selectById: selectMessageById,    // Находит одно сообщение по его ID
 } = baseSelectors;
 
