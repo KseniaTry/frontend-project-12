@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import { addChannel, selectAllChannels, editChannel, selectChannelById, setActiveChannelId } from "../slices/channelsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import * as yup from 'yup';
 import Error from "./Error";
 import { toast } from "react-toastify";
 import initLeoProfanity from "../profanity";
 import filter from 'leo-profanity'
 import { useRollbar } from '@rollbar/react';
+import { getChannelsSchema } from "../schemas";
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
@@ -18,6 +18,7 @@ const ChannelModal = ({ show, onHide, type}) => {
   const errorText = useSelector(state => state.channels?.errorText)
   const errorStatus = useSelector(state => state.channels?.errorStatus)
   const channels = useSelector(selectAllChannels)
+  const schema = getChannelsSchema(t, channels)
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
   const activeChannel = useSelector((state) => {
     if (activeChannelId)  {
@@ -28,19 +29,6 @@ const ChannelModal = ({ show, onHide, type}) => {
   })
 
   initLeoProfanity()
-
-  const schema = yup.object().shape({
-    channelName: yup.string()
-      .min(3, t('validation.length'))
-      .max(20, t('validation.length'))
-      .test(
-        '',
-        t('validation.unique'),
-        (value) => {
-          return channels.every((channel) => channel.name !== value)
-        }
-      )
-  })
 
   const handleAddChannel = async (newChannel) => {
     try {

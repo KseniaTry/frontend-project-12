@@ -4,10 +4,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Header from "./Header";
-import * as yup from 'yup';
 import { createNewUser } from "../slices/usersSlice";
 import { setAuthStatus, setCurrentUsername, setToken } from "../slices/authSlice";
 import { useRollbar } from "@rollbar/react";
+import { getRegistrationSchema } from "../schemas";
 
 const Registration = () => {
   const navigate = useNavigate()
@@ -15,18 +15,7 @@ const Registration = () => {
   const rollbar = useRollbar()
   const {t} = useTranslation()
 
-  const schema = yup.object().shape({
-    username: yup.string()
-      .min(3, t('validation.length'))
-      .max(20, t('validation.length'))
-      .required(t('validation.required')),
-    password: yup.string()
-      .min(6, t('validation.passwordLength'))
-      .required(t('validation.required')),
-    confirmPassword: yup.string()
-      .oneOf([yup.ref('password')], t('validation.passwordConfirm'))
-      .required(t('validation.required'))
-  })
+  const schema = getRegistrationSchema(t)
 
   const formik = useFormik({
     initialValues: {
