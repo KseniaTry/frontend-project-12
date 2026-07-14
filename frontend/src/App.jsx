@@ -13,6 +13,7 @@ const ProtectedRoute = () => {
 };
 
 function App() {
+  console.log('Проверка токена:', import.meta.env.VITE_ROLLBAR_TOKEN);
   return (
     <>
       <BrowserRouter>

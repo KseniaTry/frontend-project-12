@@ -1,6 +1,6 @@
 export const rollbarConfig = {
-  accessToken: 'c7a61ac07311456394429e4d0433cbf7',
-  environment: 'production',
+  accessToken: import.meta.env.VITE_ROLLBAR_TOKEN || '', 
+  environment: import.meta.env.VITE_ENVIRONMENT || 'production',
   captureUncaught: true,
   captureUnhandledRejections: true,
 };
