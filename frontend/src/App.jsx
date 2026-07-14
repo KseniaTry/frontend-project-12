@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import Login from './Login';
-import NotFound from './NotFound';
-import Chat from './Chat';
-import Registration from './Registration';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+import Chat from './pages/Chat'
+import Registration from './pages/Registration';
 import { useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 

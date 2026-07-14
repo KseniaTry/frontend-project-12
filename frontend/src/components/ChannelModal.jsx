@@ -2,14 +2,13 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
-import { addChannel, selectAllChannels, editChannel, selectChannelById, setActiveChannelId } from "../slices/channelsSlice";
+import { selectAllChannels, selectChannelById } from "../slices/channelsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Error from "./Error";
-import { toast } from "react-toastify";
 import initLeoProfanity from "../profanity";
-import filter from 'leo-profanity'
 import { useRollbar } from '@rollbar/react';
 import { getChannelsSchema } from "../schemas";
+import { handleChannelModalSubmit } from "../submits/channelModalsubmit";
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
@@ -20,41 +19,10 @@ const ChannelModal = ({ show, onHide, type}) => {
   const channels = useSelector(selectAllChannels)
   const schema = getChannelsSchema(t, channels)
   const activeChannelId = useSelector(state => state.channels.activeChannelId)
-  const activeChannel = useSelector((state) => {
-    if (activeChannelId)  {
-      return  selectChannelById(state, activeChannelId)
-    } else {
-      return null
-    }
-  })
+  const activeChannel = useSelector((state) => activeChannelId ? selectChannelById(state, activeChannelId) : null)
+  const context = {activeChannelId, onHide, dispatch, rollbar, t}
 
   initLeoProfanity()
-
-  const handleAddChannel = async (newChannel) => {
-    try {
-      const response = await dispatch(addChannel(newChannel)).unwrap()
-      localStorage.setItem('activeChannel', response.id);
-      dispatch(setActiveChannelId(response.id))
-      toast.success(t('notifications.success.channelAdd'));
-      return true // нужно для закрытия модалки и для сброса формы только в случае успешной обработки запроса
-    } catch(err) {
-      toast.error(t('errors.channelAdd'))
-      rollbar.error(t('errors.channelAdd'), err);
-      return false 
-    }
-  };
-
-  const handleRenameChannel = async (activeChannelId, newChannel) => {
-    try {
-      await dispatch(editChannel({ channelId: activeChannelId, editedChannel: newChannel })).unwrap()
-      toast.success(t('notifications.success.channelRename'));
-      return true
-    } catch(err) {
-      toast.error(t('errors.channelRename'))
-      rollbar.error(t('errors.channelRename'), err);
-      return false 
-    }
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -62,32 +30,7 @@ const ChannelModal = ({ show, onHide, type}) => {
     },
     validationSchema: schema,
     enableReinitialize: true, // нужно для того чтобы при переименовании отобразилось имя текущего канала (тк данные приходят не сразу)
-    onSubmit: async (values, {setSubmitting}) => {     
-      const newChannel = {
-        name: filter.clean(values.channelName)
-      }
-
-      let isSuccess = false
-
-      switch (type) {
-        case 'add':
-          isSuccess = await handleAddChannel(newChannel)
-          break
-        case 'rename':
-          isSuccess = await handleRenameChannel(activeChannelId, newChannel)
-          break
-        default: 
-          console.log('type not exist')
-          break
-      }
-  
-      if (isSuccess) {
-        formik.resetForm()
-        onHide()
-      }
-
-      setSubmitting(false);
-    },
+    onSubmit: async (values, actions) => await handleChannelModalSubmit( values, actions, context, type)
   });
 
   return (

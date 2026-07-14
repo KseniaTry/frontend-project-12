@@ -4,9 +4,9 @@ import { getChannels } from "../slices/channelsSlice"
 import { addNewChannel, removeChannel, renameChannel } from "../slices/channelsSlice"
 import { Container, Row, Col } from 'react-bootstrap';
 import { socket } from '../socket';
-import Channels from './Channels';
-import Messages from "./Messages";
-import Header from "./Header";
+import Channels from '../components/Channels';
+import Messages from "../components/Messages";
+import Header from "../components/Header";
 import { getMessages, addMessage } from "../slices/messagesSlice";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";

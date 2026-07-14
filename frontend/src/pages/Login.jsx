@@ -1,19 +1,19 @@
 import { useFormik } from 'formik';
 import { Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { login, setCurrentUsername, setToken } from '../slices/authSlice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import Header from './Header.jsx';
-import Error from './Error.jsx';
-import { toast } from 'react-toastify';
+import Header from '../components/Header.jsx';
+import Error from '../components/Error.jsx';
 import { useRollbar } from '@rollbar/react';
+import { handleLoginSubmit } from '../submits/loginSubmit.jsx';
 
 const Login = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const rollbar = useRollbar()
   const {t} = useTranslation()
+  const context = {dispatch, rollbar, t, navigate}
   const errorText = useSelector(state => state.auth?.errorText)
   const errorStatus =  useSelector(state => state.auth?.errorStatus)// при ошибке 401 рендерим в компоненте 
 
@@ -22,31 +22,7 @@ const Login = () => {
       username: '',
       password: ''
     },
-    onSubmit: async (values, {setSubmitting}) => {
-      try {
-        const response = await dispatch(login(values)).unwrap()
-        const token = response.token
-        dispatch(setToken(token))
-        dispatch(setCurrentUsername(values.username))
-        localStorage.setItem('userToken', token)
-        localStorage.setItem('username', values.username)  
-        navigate('/'); // перенаправляем на главную страницу после успешного входа
-      } catch(err) {
-        if (err?.status === 500 || err?.status === 502) {
-          toast.error(t('errors.500'))
-        } else if (err?.status !== 401) {
-          toast.error(t('errors.server', {error: err.data.error}));
-          rollbar.error(t('errors.auth'), err);
-        }
- 
-        dispatch(setToken(''))
-        dispatch(setCurrentUsername(''))
-        localStorage.removeItem('userToken')
-        localStorage.removeItem('username')
-      } finally {
-        setSubmitting(false);
-      }
-    },
+    onSubmit: async (values, actions) => await handleLoginSubmit(values, actions, context)
   });
 
   return (

@@ -3,18 +3,17 @@ import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import Header from "./Header";
-import { createNewUser } from "../slices/usersSlice";
-import { setAuthStatus, setCurrentUsername, setToken } from "../slices/authSlice";
+import Header from "../components/Header";
 import { useRollbar } from "@rollbar/react";
 import { getRegistrationSchema } from "../schemas";
+import { handleRegistrationSubmit } from "../submits/registrationSubmit";
 
 const Registration = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const rollbar = useRollbar()
   const {t} = useTranslation()
-
+  const context = {dispatch, navigate, rollbar, t}
   const schema = getRegistrationSchema(t)
 
   const formik = useFormik({
@@ -24,29 +23,7 @@ const Registration = () => {
       confirmPassword: ''
     },
     validationSchema: schema,
-    onSubmit: async (values, {setErrors, setSubmitting}) => {
-      const newUser = {
-        username: values.username,
-        password: values.password
-      }
-      try {
-        const response =  await dispatch(createNewUser(newUser)).unwrap()
-        localStorage.setItem('userToken', response.token)
-        localStorage.setItem('username', response.username)
-        dispatch(setToken(response.token))
-        dispatch(setCurrentUsername(response.username))
-        dispatch(setAuthStatus(true))
-        navigate('/') 
-      } catch(err) {
-        if (err?.status === 409) {
-          setErrors({ username: t('validation.usernameCheck') }); // показываем в интерфейсе
-        } else {
-          rollbar.error(t('errors.registration'), err)
-        }
-      } finally {
-        setSubmitting(false);
-      }
-    }
+    onSubmit: async (values, actions) => await handleRegistrationSubmit(values, actions, context)
   })
   
   return(

@@ -46,7 +46,6 @@ const DropdownChannel = ({handleClickChannel, channel, isActive}) => {
         onHide={() => setDeleteModalShow(false)} 
         channel={channel}/>
     </>
-
   )
 }
 
