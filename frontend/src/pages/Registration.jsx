@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import Header from "../components/Header";
 import { useRollbar } from "@rollbar/react";
 import { getRegistrationSchema } from "../schemas";
-import { handleRegistrationSubmit } from "../submits/registrationSubmit";
+import { handleRegistrationSubmit } from "../submits/registrationSubmit.jsx";
 
 const Registration = () => {
   const navigate = useNavigate()

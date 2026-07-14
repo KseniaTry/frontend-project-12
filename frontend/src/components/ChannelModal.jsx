@@ -8,7 +8,7 @@ import Error from "./Error";
 import initLeoProfanity from "../profanity";
 import { useRollbar } from '@rollbar/react';
 import { getChannelsSchema } from "../schemas";
-import { handleChannelModalSubmit } from "../submits/channelModalsubmit";
+import { handleChannelModalSubmit } from "../submits/channelModalSubmit.jsx";
 
 const ChannelModal = ({ show, onHide, type}) => {
   const {t} = useTranslation()
