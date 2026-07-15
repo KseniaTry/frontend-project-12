@@ -47,7 +47,7 @@ const ChannelModal = ({ show, onHide, type}) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={ formik.handleSubmit}>
+        <Form onSubmit={ formik.handleSubmit} autoComplete="off">
           <Form.Group controlId="channelName" className="mb-4">
             <Form.Label className="mb-3">
               { t('channelModal.label')}

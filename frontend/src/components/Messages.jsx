@@ -78,7 +78,7 @@ const Messages = ({isSocketConnected}) => {
    
       </div>
       <div className="flex-grow-0 flex-shrink-0 p-4 w-100">
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} autoComplete="off">
           <Form.Group controlId="message" className="d-flex gap-2">
             <Form.Control 
               name="message" 
@@ -87,6 +87,7 @@ const Messages = ({isSocketConnected}) => {
               onChange={ e => setValue(e.target.value)} 
               placeholder={t('messages.placeholder')} 
               aria-label={t('messages.placeholder')}
+              autoFocus
               required
             />
             <Form.Label ></Form.Label>
