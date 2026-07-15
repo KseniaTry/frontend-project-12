@@ -21,6 +21,7 @@ const Chat = () => {
   const messagesErrorStatus = useSelector(state => state.messages?.errorStatus)
   const channelsErrorText = useSelector(state => state.channels?.errorText)
   const messagesErrorText = useSelector(state => state.messages?.errorText)
+  const activeChannelId = useSelector(state => state.channels.activeChannelId)
 
   // загружаем исходные данные единожды
   useEffect(() => {
@@ -102,7 +103,7 @@ const Chat = () => {
           <Channels />
         </Col>
         <Col xs={8} md={8} className="h-100 d-flex flex-column p-0" style={{ minHeight: 0 }}>
-          <Messages isConnected={isSocketConnected}/>
+          <Messages key={activeChannelId} isConnected={isSocketConnected}/>
         </Col>
       </Row>
   
