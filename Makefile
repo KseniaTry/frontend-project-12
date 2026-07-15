@@ -7,6 +7,3 @@ build:
 install:
 	npm install
 	cd frontend && npm install
-
-test:
-	npx playwright test --ui
